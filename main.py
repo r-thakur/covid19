@@ -41,7 +41,7 @@ def parsePDF(fileLocation):
     #find cases in ottawa
     page = read_pdf.getPage(8)
     page_content = page.extractText().replace("\n","")
-    x = re.findall("(?<=\Ottawa Public Health ).*?  ", page_content)[0]
+    x = re.findall("(?<=\Ottawa Public Health ).*? +[0-9]+ +", page_content)[0]
     x = x.split(" ")
     ottawaCasesToday = x[1]
     ottawaCasesYest = x[0]
@@ -49,23 +49,23 @@ def parsePDF(fileLocation):
     #find cases in Durham, peel, york, toronto, windsor
     page = read_pdf.getPage(9)
     page_content = page.extractText().replace("\n","")
-    x = re.findall("(?<=\Durham Region Health Department ).*?  ", page_content)[0]
+    x = re.findall("(?<=\Durham Region Health Department ).*? +[0-9]+ +", page_content)[0]
     x = x.split(" ")
     durhamCasesToday = x[1]
     durhamCasesYest = x[0]
-    x = re.findall("(?<=\ Peel Public Health ).*?  ", page_content)[0]
+    x = re.findall("(?<=\ Peel Public Health ).*? +[0-9]+ +", page_content)[0]
     x = x.split(" ")
     peelCasesToday = x[1]
     peelCasesYest = x[0]
-    x = re.findall("(?<=\ York Region Public Health ).*?  ", page_content)[0]
+    x = re.findall("(?<=\ York Region Public Health ).*? +[0-9]+ +", page_content)[0]
     x = x.split(" ")
     yorkCasesToday = x[1]
     yorkCasesYest = x[0]
-    x = re.findall("(?<=\ Toronto Public Health ).*?  ", page_content)[0]
+    x = re.findall("(?<=\ Toronto Public Health ).*? +[0-9]+ +", page_content)[0]
     x = x.split(" ")
     torontoCasesToday = x[1]
     torontoCasesYest = x[0]
-    x = re.findall("(?<=\Essex County Health Unit ).*?  ", page_content)[0]
+    x = re.findall("(?<=\Essex County Health Unit ).*? +[0-9]+ +", page_content)[0]
     x = x.split(" ")
     windsorCasesToday = x[1]
     windsorCasesYest = x[0]
@@ -96,17 +96,23 @@ def parseSite(url):
 def printAll():
     print newCasesToday + "/" + totalTestsCompleted
     print "(New Cases/Total Tests) completed in the last 24 hours"
-    print round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2),"%"
+    print str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2))+"%"
     print
     print "*GTA*"
     print "Toronto: " + torontoCasesToday + " (Yesterday: " + torontoCasesYest + ")"
+    print "New cases per 100k: " + str(round((float(torontoCasesToday)/2950000*100000),3))
     print "Durham: " + durhamCasesToday + " (Yesterday: " + durhamCasesYest + ")"
+    print "New cases per 100k: " + str(round((float(durhamCasesToday)/683600*100000),3))  
     print "York: " + yorkCasesToday + " (Yesterday: " + yorkCasesYest + ")"
+    print "New cases per 100k: " + str(round((float(yorkCasesToday)/1191400*100000),3))
     print "Peel: " + peelCasesToday + " (Yesterday: " + peelCasesYest + ")"
-    print
+    print "New cases per 100k: " + str(round((float(peelCasesToday)/1484000*100000),3))
+    print 
     print "*Outside*"
     print "Ottawa: " + ottawaCasesToday + " (Yesterday: " + ottawaCasesYest + ")"
+    print "New cases per 100k: "+ str(round((float(ottawaCasesToday)/1095134*100000),3))
     print "Windsor: " + windsorCasesToday + " (Yesterday: " + windsorCasesYest + ")"
+    print "New cases per 100k: " + str(round((float(windsorCasesToday)/388785*100000),3))
 
 
 def pullPDF():
