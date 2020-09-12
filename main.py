@@ -19,7 +19,8 @@ def parsePDF(fileLocation):
     global yorkCasesYest
     global torontoCasesYest
     global windsorCasesYest
-    print fileLocation
+    print "Regional data pulled from: " + fileLocation
+    print
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
@@ -100,19 +101,19 @@ def printAll():
     print
     print "*GTA*"
     print "Toronto: " + torontoCasesToday + " (Yesterday: " + torontoCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(torontoCasesToday)/2950000*100000),3))
+    print str(round((float(torontoCasesToday)/2950000*100000),3)) + " per 100k"
     print "Durham: " + durhamCasesToday + " (Yesterday: " + durhamCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(durhamCasesToday)/683600*100000),3))  
+    print str(round((float(durhamCasesToday)/683600*100000),3)) + " per 100k"
     print "York: " + yorkCasesToday + " (Yesterday: " + yorkCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(yorkCasesToday)/1191400*100000),3))
+    print str(round((float(yorkCasesToday)/1191400*100000),3)) + " per 100k"
     print "Peel: " + peelCasesToday + " (Yesterday: " + peelCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(peelCasesToday)/1484000*100000),3))
+    print str(round((float(peelCasesToday)/1484000*100000),3)) + " per 100k"
     print 
     print "*Outside*"
     print "Ottawa: " + ottawaCasesToday + " (Yesterday: " + ottawaCasesYest + ")"
-    print "New cases per 100k: "+ str(round((float(ottawaCasesToday)/1095134*100000),3))
+    print str(round((float(ottawaCasesToday)/1095134*100000),3)) + " per 100k"
     print "Windsor: " + windsorCasesToday + " (Yesterday: " + windsorCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(windsorCasesToday)/388785*100000),3))
+    print str(round((float(windsorCasesToday)/388785*100000),3)) + " per 100k"
 
 
 def pullPDF():
