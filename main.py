@@ -3,31 +3,28 @@ from bs4 import BeautifulSoup
 import requests
 import json
 import re
-import urllib2
+from urllib.request import urlopen, Request
+import ssl
+import sys
+
+import region
+# import tabula
 
 
 def parsePDF(fileLocation):
-    global ottawaCasesToday
-    global durhamCasesToday
-    global peelCasesToday
-    global yorkCasesToday
-    global torontoCasesToday
-    global windsorCasesToday
-    global ottawaCasesYest
-    global durhamCasesYest
-    global peelCasesYest
-    global yorkCasesYest
-    global torontoCasesYest
-    global windsorCasesYest
-    print fileLocation
+    global regions
+
+    regions = {}
+
+    print(fileLocation)
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
        'Accept-Encoding': 'none',
        'Accept-Language': 'en-US,en;q=0.8',
        'Connection': 'keep-alive'}
-    requestWHeader = urllib2.Request(fileLocation, headers=hdr)
-    pdfFile = urllib2.urlopen(requestWHeader)
+    requestWHeader = Request(fileLocation, headers=hdr)
+    pdfFile = urlopen(requestWHeader,context = ssl.SSLContext())
     data = pdfFile.read()
     with open("current.pdf", "wb") as code:
         code.write(data)
@@ -36,44 +33,60 @@ def parsePDF(fileLocation):
 
     pdf_file = open("current.pdf",'rb')
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
+    # df = tabula.read_pdf("current.pdf", pages='all')
 
+    # print(df)
 
     #find cases in ottawa
+    pages = []
     page = read_pdf.getPage(8)
-    page_content = page.extractText().replace("\n","")
-    x = re.findall("(?<=\Ottawa Public Health ).*? +[0-9]+ +", page_content)[0]
-    x = x.split(" ")
-    ottawaCasesToday = x[1]
-    ottawaCasesYest = x[0]
-
-    #find cases in Durham, peel, york, toronto, windsor
+    pages.append(page)
     page = read_pdf.getPage(9)
-    page_content = page.extractText().replace("\n","")
-    x = re.findall("(?<=\Durham Region Health Department ).*? +[0-9]+ +", page_content)[0]
-    x = x.split(" ")
-    durhamCasesToday = x[1]
-    durhamCasesYest = x[0]
-    x = re.findall("(?<=\ Peel Public Health ).*? +[0-9]+ +", page_content)[0]
-    x = x.split(" ")
-    peelCasesToday = x[1]
-    peelCasesYest = x[0]
-    x = re.findall("(?<=\ York Region Public Health ).*? +[0-9]+ +", page_content)[0]
-    x = x.split(" ")
-    yorkCasesToday = x[1]
-    yorkCasesYest = x[0]
-    x = re.findall("(?<=\ Toronto Public Health ).*? +[0-9]+ +", page_content)[0]
-    x = x.split(" ")
-    torontoCasesToday = x[1]
-    torontoCasesYest = x[0]
-    x = re.findall("(?<=\Essex County Health Unit ).*? +[0-9]+ +", page_content)[0]
-    x = x.split(" ")
-    windsorCasesToday = x[1]
-    windsorCasesYest = x[0]
+    pages.append(page)
+    page = read_pdf.getPage(10)
+    pages.append(page)
 
-def parseSite(url):
+    for page in pages:
+        page_content = page.extractText().replace("\n","")
+        # print(page_content)
+        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[0-9]+ +[0-9]+", page_content)
+        healthUnits = []
+        # x = x.split(" ")
+        # print(x)
+        for subString in x:
+            if "health" in subString.lower():
+                healthUnits.append(subString)
+        for subString in healthUnits:
+            healthUnitsWithValues = subString.split(" ")
+            currLastDay = healthUnitsWithValues[-1]
+            currDay = healthUnitsWithValues[-2]
+            # print(currDay,currLastDay)
+            #print(healthUnitsWithValues)
+            tempName = ""
+            for x in healthUnitsWithValues[:-2]:
+                tempName = tempName + x + " "
+            tempName = tempName[:-1]
+            # print(tempName)
+            tempRegion = region.Region(tempName,0,currDay,currLastDay)
+            regions[tempName] = tempRegion
+            
+        popFile = open("HealthUnitPopulations.txt",'r')
+        for x in popFile:
+            currRegion = x.replace("\n","")
+            if currRegion in regions.keys():
+                population = int(next(popFile))
+                regions[currRegion].setPopulation(population)     
+                regions[currRegion].calculatePer100()
+
+
+
+        
+    
+
+def parseSite():
     global totalTestsCompleted
     global newCasesToday
-    jsonAsText = requests.get(url)
+    jsonAsText = requests.get("https://api.ontario.ca/api/drupal/page%2Fhow-ontario-is-responding-covid-19?fields=body")
     # print jsonAsText
     jsonObj = jsonAsText.json()
     html= jsonObj["body"]["und"][0]["value"]
@@ -93,30 +106,24 @@ def parseSite(url):
     #print totalTestsCompleted, newCasesToday
 
 
-def printAll():
-    print newCasesToday + "/" + totalTestsCompleted
-    print "(New Cases/Total Tests) completed in the last 24 hours"
-    print str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2))+"%"
-    print
-    print "*GTA*"
-    print "Toronto: " + torontoCasesToday + " (Yesterday: " + torontoCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(torontoCasesToday)/2950000*100000),3))
-    print "Durham: " + durhamCasesToday + " (Yesterday: " + durhamCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(durhamCasesToday)/683600*100000),3))  
-    print "York: " + yorkCasesToday + " (Yesterday: " + yorkCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(yorkCasesToday)/1191400*100000),3))
-    print "Peel: " + peelCasesToday + " (Yesterday: " + peelCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(peelCasesToday)/1484000*100000),3))
-    print 
-    print "*Outside*"
-    print "Ottawa: " + ottawaCasesToday + " (Yesterday: " + ottawaCasesYest + ")"
-    print "New cases per 100k: "+ str(round((float(ottawaCasesToday)/1095134*100000),3))
-    print "Windsor: " + windsorCasesToday + " (Yesterday: " + windsorCasesYest + ")"
-    print "New cases per 100k: " + str(round((float(windsorCasesToday)/388785*100000),3))
+def printAll(per100 = 2):
+    print(newCasesToday + "/" + totalTestsCompleted + " = " + str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2))+"%")
+    print("(New Cases/Total Tests) completed in the last 24 hours")
+
+    print()
+    print("*GTA*")
+    for x in regions.keys():
+        if regions[x].isPartOfGTA():
+            regions[x].printRelevant()
+
+    print()
+    print("*Outside of GTA with greater than " + str(per100) + " per 100k*")
+    for x in regions.keys():
+        if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
+            regions[x].printRelevant()
 
 
 def pullPDF():
-    global url
     pdfFilePage = requests.get("https://covid-19.ontario.ca/covid-19-epidemiologic-summaries-public-health-ontario")
     html = pdfFilePage.text
     soup = BeautifulSoup(html, "html.parser")
@@ -126,11 +133,15 @@ def pullPDF():
 
     url = str(linkLookupStr[3]).split('\"')[1]
 
+    parsePDF(url)
     
 
 if __name__ == "__main__":
-    parseSite("https://api.ontario.ca/api/drupal/page%2Fhow-ontario-is-responding-covid-19?fields=body")
+    parseSite()
     pullPDF()
-    parsePDF(url)
 
-    printAll()
+
+    if (len(sys.argv) > 1):
+        printAll(int(sys.argv[1]))
+    else:
+        printAll()
