@@ -6,6 +6,8 @@ import re
 from urllib.request import urlopen, Request
 import ssl
 import sys
+import server
+from string import Template
 
 import region
 # import tabula
@@ -33,11 +35,6 @@ def parsePDF(fileLocation):
 
     pdf_file = open("current.pdf",'rb')
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
-    # df = tabula.read_pdf("current.pdf", pages='all')
-
-    # print(df)
-
-    #find cases in ottawa
     pages = []
     page = read_pdf.getPage(8)
     pages.append(page)
@@ -79,8 +76,31 @@ def parsePDF(fileLocation):
                 regions[currRegion].calculatePer100()
 
 
-
+@server.app.route('/covid/<per100>')
+def covidInfo(per100):
+    per100 = int(per100)
+    returnObj = ""
+    returnObj += "<p>" + (newCasesToday + "/" + totalTestsCompleted + " = " + str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2))+"%") + "</p>"
+    returnObj += "<p>(New Cases/Total Tests) completed in the last 24 hours</p>"
+    returnObj += "<p></p>"
+    for x in regions.keys():
+        if regions[x].isPartOfGTA():
+            returnObj += "<p>" + regions[x].getCasesTodayAndYestString() + "</p>"
+            returnObj += "<p>" + regions[x].getPer100kString() + "</p>"
+    returnObj += "<p></p>"
+    returnObj += "<p>" + "*Outside of GTA with greater than " + str(per100) + " per 100k*" +"</p>"
+    for x in regions.keys():
+        if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
+            returnObj += "<p>" + regions[x].getCasesTodayAndYestString() + "</p>"
+            returnObj += "<p>" + regions[x].getPer100kString() + "</p>"
+    return  returnObj
         
+
+@server.app.route('/refresh')
+def refreshData():
+    parseSite()
+    pullPDF()
+    return "Refresh was successful"
     
 
 def parseSite():
@@ -142,6 +162,12 @@ if __name__ == "__main__":
 
 
     if (len(sys.argv) > 1):
-        printAll(int(sys.argv[1]))
+        if (sys.argv[1] == "server"):
+            server.app.run()
+        else:
+            printAll(int(sys.argv[1]))
     else:
         printAll()
+
+
+    
