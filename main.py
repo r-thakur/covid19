@@ -144,11 +144,4 @@ if __name__ == "__main__":
     if (len(sys.argv) > 1):
         printAll(int(sys.argv[1]))
     else:
-<<<<<<< Updated upstream:main.py
         printAll()
-=======
-        server.app.run(host='0.0.0.0')
-
-
-    
->>>>>>> Stashed changes:src/main.py
