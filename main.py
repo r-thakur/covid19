@@ -58,8 +58,8 @@ def parsePDF(fileLocation):
                 healthUnits.append(subString)
         for subString in healthUnits:
             healthUnitsWithValues = subString.split(" ")
-            currLastDay = healthUnitsWithValues[-2]
-            currDay = healthUnitsWithValues[-1]
+            currLastDay = healthUnitsWithValues[-1]
+            currDay = healthUnitsWithValues[-2]
             # print(currDay,currLastDay)
             #print(healthUnitsWithValues)
             tempName = ""
