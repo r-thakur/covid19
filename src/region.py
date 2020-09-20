@@ -20,6 +20,12 @@ class Region:
         print(self.name + ": " + str(self.casesToday) + " (Yesterday: "+ self.casesYesterday + ")")
         print(str(self.per100) + " per 100k")
 
+    def getCasesTodayAndYestString(self):
+        return (self.name + ": " + str(self.casesToday) + " (Yesterday: "+ self.casesYesterday + ")")
+
+    def getPer100kString(self):
+        return (str(self.per100) + " per 100k")
+
     def getPer100k(self):
         return self.per100
 
@@ -28,6 +34,7 @@ class Region:
 
     def setPopulation(self,population):
         self.population = population
+
     def calculatePer100(self):
         self.per100 = round((float(self.casesToday)/self.population*100000),3)
 
