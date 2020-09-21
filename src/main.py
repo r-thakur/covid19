@@ -8,9 +8,12 @@ import ssl
 import sys
 import server
 from string import Template
+import config
 
 import region
 # import tabula
+
+app = server.app
 
 
 def parsePDF(fileLocation):
@@ -76,7 +79,7 @@ def parsePDF(fileLocation):
                 regions[currRegion].calculatePer100()
 
 
-@server.app.route('/covid/<per100>')
+@app.route('/covid/<per100>')
 def covidInfo(per100):
     per100 = int(per100)
     returnObj = ""
@@ -96,12 +99,15 @@ def covidInfo(per100):
     return  returnObj
         
 
-@server.app.route('/refresh')
-def refreshData():
+@app.route('/refresh')
+def refreshDataEndpoint():
     parseSite()
     pullPDF()
     return "Refresh was successful"
     
+def refreshData():
+    parseSite()
+    pullPDF()
 
 def parseSite():
     global totalTestsCompleted
@@ -155,16 +161,12 @@ def pullPDF():
 
     parsePDF(url)
     
-
+refreshData()
 if __name__ == "__main__":
-    parseSite()
-    pullPDF()
-
-
     if (len(sys.argv) > 1):
         printAll(int(sys.argv[1]))
     else:
-        server.app.run(host='0.0.0.0')
+        app.run(host='0.0.0.0',port=config.PORT, debug=config.DEBUG_MODE)
 
 
     
