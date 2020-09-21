@@ -9,12 +9,13 @@ import sys
 import server
 from string import Template
 import config
+import flask
 
 import region
 # import tabula
 
 app = server.app
-
+prevURL = ""
 
 def parsePDF(fileLocation):
     global regions
@@ -97,7 +98,32 @@ def covidInfo(per100):
             returnObj += "<p>" + regions[x].getCasesTodayAndYestString() + "</p>"
             returnObj += "<p>" + regions[x].getPer100kString() + "</p>"
     return  returnObj
-        
+
+
+@app.route('/covidHTML/<per100>')
+def covidInfoWithHTML(per100):
+    refreshData()
+    per100 = int(per100)
+    gtaData = ""
+    for x in regions.keys():
+        if regions[x].isPartOfGTA():
+            gtaData += '<tr class="row100 body">'
+            gtaData += '<td class="cell100 column1">' + regions[x].getName() + "</td>"
+            gtaData += '<td class="cell100 column2">' + regions[x].getCasesTodayString() + "</td>"
+            gtaData += '<td class="cell100 column3">' + str(regions[x].getPer100k()) + "</td>"
+            gtaData += '<td class="cell100 column4">' + str(regions[x].getCasesYesterdayString()) + "</td>"
+            gtaData += "</tr>"
+    outsideData = ""
+    for x in regions.keys():
+        if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
+            outsideData += '<tr class="row100 body">'
+            outsideData += '<td class="cell100 column1">' + regions[x].getName() + "</td>"
+            outsideData += '<td class="cell100 column2">' + regions[x].getCasesTodayString() + "</td>"
+            outsideData += '<td class="cell100 column3">' + str(regions[x].getPer100k()) + "</td>"
+            outsideData += '<td class="cell100 column4">' + str(regions[x].getCasesYesterdayString()) + "</td>"
+            outsideData += "</tr>"
+
+    return flask.render_template('index.html',NewCases=newCasesToday,TotalTests=totalTestsCompleted,PercentPositive=str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2)),GTARows=gtaData, OutsideRows = outsideData)
 
 @app.route('/refresh')
 def refreshDataEndpoint():
@@ -106,8 +132,13 @@ def refreshDataEndpoint():
     return "Refresh was successful"
     
 def refreshData():
-    parseSite()
-    pullPDF()
+    global url, prevURL
+    url = pullPDF()
+    if (url != prevURL):
+        print("Data was updated")
+        parsePDF(url)
+        parseSite()
+        prevURL = url
 
 def parseSite():
     global totalTestsCompleted
@@ -157,12 +188,13 @@ def pullPDF():
     #regexString = '(?<=\<a href=").+?(pdf)'
     #x = re.findall(regexString, linkLookupStr)[0]
 
-    url = str(linkLookupStr[3]).split('\"')[1]
+    currURL = str(linkLookupStr[3]).split('\"')[1]
 
-    parsePDF(url)
+    return currURL
     
 refreshData()
 if __name__ == "__main__":
+    prevURL = ""
     if (len(sys.argv) > 1):
         printAll(int(sys.argv[1]))
     else:
