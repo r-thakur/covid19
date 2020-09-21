@@ -1,0 +1,68 @@
+Northwestern Health Unit
+74745
+Thunder Bay District Health Unit
+147350
+Algoma Public Health
+114785
+North Bay Parry Sound District Health Unit
+124790
+Porcupine Health Unit
+84245
+Public Health Sudbury & Districts
+194620
+Timiskaming Health Unit
+33365
+Ottawa Public Health
+1095134
+Eastern Ontario Health Unit
+196545
+Hastings Prince Edward Public Health
+136445
+Kingston, Frontenac and Lennox & Addington Public Health
+191560
+Leeds, Grenville & Lanark District Health Unit
+164970
+Renfrew County and District Health Unit
+102620
+Durham Region Health Department
+683600
+Haliburton, Kawartha, Pine Ridge District Health Unit
+172370
+Peel Public Health
+1484000
+Peterborough Public Health
+134935
+Simcoe Muskoka District Health Unit
+504110
+York Region Public Health
+1191400
+Toronto Public Health
+2950000
+Chatham-Kent Public Health
+104075
+Grey Bruce Health Unit
+158670
+Huron Perth Public Health
+59100
+Lambton Public Health
+126200
+Middlesex-London Health Unit
+439150
+Southwestern Public Health
+199840
+Windsor-Essex County Health Unit
+388785
+Brant County Health Unit
+137100
+City of Hamilton Public Health Services
+519950
+Haldimand-Norfolk Health Unit
+108050
+Halton Region Public Health
+501670
+Niagara Region Public Health
+431345
+Region of Waterloo Public Health and Emergency Services
+507095
+Wellington-Dufferin-Guelph Public Health
+265240
