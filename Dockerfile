@@ -7,10 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-
 EXPOSE 5000
 
 WORKDIR /Users/rohit/Documents/GitHub/covid19/src
 
-
-ENTRYPOINT ["python","./main.py"]
+CMD ["gunicorn", "main:app", "--config=config.py"]
