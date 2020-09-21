@@ -23,6 +23,15 @@ class Region:
     def getCasesTodayAndYestString(self):
         return (self.name + ": " + str(self.casesToday) + " (Yesterday: "+ self.casesYesterday + ")")
 
+    def getName(self):
+        return self.name
+
+    def getCasesTodayString(self):
+        return str(self.casesToday)
+
+    def getCasesYesterdayString(self):
+        return str(self.casesYesterday)
+
     def getPer100kString(self):
         return (str(self.per100) + " per 100k")
 
