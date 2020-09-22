@@ -10,13 +10,14 @@ import server
 from string import Template
 import config
 import flask
-
+import pandas
 import region
-# import tabula
+from datetime import datetime, timedelta
+
+
 
 app = server.app
 prevURL = ""
-
 def parsePDF(fileLocation):
     global regions
 
@@ -123,48 +124,40 @@ def covidInfoWithHTML(per100):
             outsideData += '<td class="cell100 column4">' + str(regions[x].getCasesYesterdayString()) + "</td>"
             outsideData += "</tr>"
 
-    return flask.render_template('index.html',NewCases=newCasesToday,TotalTests=totalTestsCompleted,PercentPositive=str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2)),GTARows=gtaData, OutsideRows = outsideData)
+    return flask.render_template('index.html',NewCases=newCasesToday,TotalTests=totalTestsCompleted,PercentPositive=str(round((float(newCasesToday)/float(totalTestsCompleted)*100),2)),GTARows=gtaData, OutsideRows = outsideData,ActiveCases = totalActiveCases,DeltaActiveCases = deltaActiveCases, LastUpdated = lastUpdatedTime.date(), Per100k = per100)
 
 @app.route('/refresh')
 def refreshDataEndpoint():
-    parseSite()
-    pullPDF()
+    initData()
     return "Refresh was successful"
+
+@app.route('/todaysdate')
+def returnTodaysDate():
+    todayTime=datetime.today()
+    return todayTime
     
 def refreshData():
-    global url, prevURL
+    global url, prevURL, lastUpdatedTime
+    timeAt1030 = datetime.today().replace(hour = 14, minute = 31, second= 0, microsecond=0)
+    timeRightNow = datetime.today()
+    if (timeRightNow > timeAt1030 and timeAt1030 > lastUpdatedTime):
+        url = pullPDF()
+        if (url != prevURL):
+            parsePDF(url)
+            pullCSV()
+            prevURL = url
+            lastUpdatedTime=datetime.today()
+
+def initData():
+    global url, prevURL, lastUpdatedTime
     url = pullPDF()
-    if (url != prevURL):
-        print("Data was updated")
-        parsePDF(url)
-        parseSite()
-        prevURL = url
-
-def parseSite():
-    global totalTestsCompleted
-    global newCasesToday
-    jsonAsText = requests.get("https://api.ontario.ca/api/drupal/page%2Fhow-ontario-is-responding-covid-19?fields=body")
-    # print jsonAsText
-    jsonObj = jsonAsText.json()
-    html= jsonObj["body"]["und"][0]["value"]
-    soup = BeautifulSoup(html, "html.parser")
-    soupStr = str(soup)
-    #Find total tests completed in the last day
-    x = re.findall("Total tests completed in the previous day.+\n.+", soupStr)[0]
-    x = x.split("<td>")[1]
-    x = x.split("</td>")[0]
-    totalTestsCompleted = x
-
-    #Find total new cases
-    x = re.findall("Change from previous report \(new cases.+\n.+\n.+", soupStr)[0]
-    x = x.split("<td>")[1]
-    x = x.split("</td>")[0]
-    newCasesToday = x   
-    #print totalTestsCompleted, newCasesToday
-
+    parsePDF(url)
+    pullCSV()
+    prevURL = url
+    lastUpdatedTime=datetime.today()
 
 def printAll(per100 = 2):
-    print(newCasesToday + "/" + totalTestsCompleted + " = " + str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2))+"%")
+    print(newCasesToday + "/" + totalTestsCompleted + " = " + str(round((float(newCasesToday)/float(totalTestsCompleted)*100),2))+"%")
     print("(New Cases/Total Tests) completed in the last 24 hours")
 
     print()
@@ -191,8 +184,32 @@ def pullPDF():
     currURL = str(linkLookupStr[3]).split('\"')[1]
 
     return currURL
+
+def pullCSV():
+    global totalTestsCompleted, newCasesToday, totalActiveCases, deltaActiveCases
+    csvURL = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
+
+    hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+    'Accept-Encoding': 'none',
+    'Accept-Language': 'en-US,en;q=0.8',
+    'Connection': 'keep-alive'}
+    requestWHeader = Request(csvURL, headers=hdr)
+    csvFile = urlopen(requestWHeader,context = ssl.SSLContext())
+
+    df = pandas.read_csv(csvFile)
+    deltaActiveCases = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(2)['Confirmed Positive'].head(1).values[0])
+    if (deltaActiveCases >= 0):
+        deltaActiveCases = '+'+str(deltaActiveCases)
+    else:
+        deltaActiveCases = '-'+str(deltaActiveCases)
+    totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
+    newCasesToday = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
+    totalTestsCompleted = int(df.tail(1)['Total tests completed in the last day'].values[0])
+
     
-refreshData()
+initData()
 if __name__ == "__main__":
     prevURL = ""
     if (len(sys.argv) > 1):

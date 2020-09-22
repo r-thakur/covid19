@@ -34,8 +34,10 @@
 							<thead>
 								<tr class="row100 head">
 									<th class="cell100 column1">Total New Cases</th>
-									<th class="cell100 column2">Total Tests Performed in last 24 hours</th>
-									<th class="cell100 column3">Percentage Positive (%)</th>
+									<th class="cell100 column2">Tests in last 24 hours</th>
+									<th class="cell100 column3">Percent Positive (%)</th>
+									<th class="cell100 column4">Current Active Cases</th>
+									<th class="cell100 column5">Delta Active Cases (1 day)</th>
 								</tr>
 							</thead>
 						</table>
@@ -45,14 +47,11 @@
 						<table>
 							<tbody>
 								<tr class="row100 body">
-									<td class="cell100 column1"></td>
-									<td class="cell100 column2"></td>
-									<td class="cell100 column3"></td>
-								</tr>
-								<tr class="row100 body">
 									<td class="cell100 column1">{{NewCases}}</td>
 									<td class="cell100 column2">{{TotalTests}}</td>
 									<td class="cell100 column3">{{PercentPositive}}</td>
+									<td class="cell100 column4">{{ActiveCases}}</td>
+									<td class="cell100 column5">{{DeltaActiveCases}}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -89,7 +88,7 @@
 								<tr class="row100 head">
 									<th class="cell100 column1">Health District (Outside)</th>
 									<th class="cell100 column2">Cases Today (Raw)</th>
-									<th class="cell100 column3">Cases Today (Per 100k)</th>
+									<th class="cell100 column3">Cases Today (>{{Per100k}} Per 100k)</th>
 									<th class="cell100 column4">Cases Yesterday</th>
 								</tr>
 							</thead>
@@ -102,11 +101,15 @@
 								{{OutsideRows|safe}}
 							</tbody>
 						</table>
+						
 					</div>
+					
 				</div>
 
 			</div>
+			
 		</div>
+		<div style="text-align: center;">Last Updated: {{LastUpdated}}</div>
 	</div>
 
 
