@@ -50,8 +50,8 @@ def parsePDF(fileLocation):
 
     for page in pages:
         page_content = page.extractText().replace("\n","")
-        # print(page_content)
-        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[0-9]+ +[0-9]+", page_content)
+        print(page_content)
+        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[-0-9]+ +[-0-9]+", page_content)
         healthUnits = []
         # x = x.split(" ")
         # print(x)
