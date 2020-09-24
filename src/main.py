@@ -79,27 +79,8 @@ def parsePDF(fileLocation):
                 population = int(next(popFile))
                 regions[currRegion].setPopulation(population)     
                 regions[currRegion].calculatePer100()
-
-
-@app.route('/covid/<per100>')
-def covidInfo(per100):
-    per100 = int(per100)
-    returnObj = ""
-    returnObj += "<p>" + (newCasesToday + "/" + totalTestsCompleted + " = " + str(round((float(newCasesToday)/float(totalTestsCompleted.replace(",",""))*100),2))+"%") + "</p>"
-    returnObj += "<p>(New Cases/Total Tests) completed in the last 24 hours</p>"
-    returnObj += "<p></p>"
-    for x in regions.keys():
-        if regions[x].isPartOfGTA():
-            returnObj += "<p>" + regions[x].getCasesTodayAndYestString() + "</p>"
-            returnObj += "<p>" + regions[x].getPer100kString() + "</p>"
-    returnObj += "<p></p>"
-    returnObj += "<p>" + "*Outside of GTA with greater than " + str(per100) + " per 100k*" +"</p>"
-    for x in regions.keys():
-        if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
-            returnObj += "<p>" + regions[x].getCasesTodayAndYestString() + "</p>"
-            returnObj += "<p>" + regions[x].getPer100kString() + "</p>"
-    return  returnObj
-
+    pdf_file.close()
+    popFile.close()
 
 @app.route('/covidHTML/<per100>')
 def covidInfoWithHTML(per100):
