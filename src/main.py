@@ -6,22 +6,29 @@ import re
 from urllib.request import urlopen, Request
 import ssl
 import sys
-import server
 from string import Template
 import config
 import flask
 import pandas
 import region
 from datetime import datetime, timedelta
+from multiprocessing import Lock
+from flask import Flask
 
 
 
-app = server.app
+app = Flask(__name__)
+regions = {}
+caseInformation = {}
+lastUpdatedTime = ""
 prevURL = ""
+
+# lock = Lock()
+# initNeeded = True
+
 def parsePDF(fileLocation):
     global regions
 
-    regions = {}
 
     print(fileLocation)
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -82,6 +89,11 @@ def parsePDF(fileLocation):
     pdf_file.close()
     popFile.close()
 
+@app.route('/')
+def hello_world():
+    return ''
+
+
 @app.route('/covidHTML/<per100>')
 def covidInfoWithHTML(per100):
     refreshData()
@@ -105,20 +117,17 @@ def covidInfoWithHTML(per100):
             outsideData += '<td class="cell100 column4">' + str(regions[x].getCasesYesterdayString()) + "</td>"
             outsideData += "</tr>"
 
-    return flask.render_template('index.html',NewCases=newCasesToday,TotalTests=totalTestsCompleted,PercentPositive=str(round((float(newCasesToday)/float(totalTestsCompleted)*100),2)),GTARows=gtaData, OutsideRows = outsideData,ActiveCases = totalActiveCases,DeltaActiveCases = deltaActiveCases, LastUpdated = lastUpdatedTime.date(), Per100k = per100)
+    return flask.render_template('index.html',NewCases=caseInformation["NewCasesToday"],TotalTests=caseInformation["TotalTestsCompleted"],PercentPositive=caseInformation["PercentPositive"],GTARows=gtaData, OutsideRows = outsideData,ActiveCases = caseInformation["TotalActiveCases"],DeltaActiveCases = caseInformation["DeltaActiveCases"], LastUpdated = lastUpdatedTime.date(), Per100k = per100)
 
 @app.route('/refresh')
 def refreshDataEndpoint():
+    # global initNeeded
+    # initNeeded = True
     initData()
     return "Refresh was successful"
 
-@app.route('/todaysdate')
-def returnTodaysDate():
-    todayTime=datetime.today()
-    return todayTime
-    
 def refreshData():
-    global url, prevURL, lastUpdatedTime
+    global prevURL, lastUpdatedTime
     timeAt1030 = datetime.today().replace(hour = 14, minute = 31, second= 0, microsecond=0)
     timeRightNow = datetime.today()
     if (timeRightNow > timeAt1030 and timeAt1030 > lastUpdatedTime):
@@ -130,28 +139,44 @@ def refreshData():
             lastUpdatedTime=datetime.today()
 
 def initData():
-    global url, prevURL, lastUpdatedTime
+    global prevURL, lastUpdatedTime
     url = pullPDF()
     parsePDF(url)
     pullCSV()
     prevURL = url
     lastUpdatedTime=datetime.today()
+    print("Initialization complete")
 
-def printAll(per100 = 2):
-    print(newCasesToday + "/" + totalTestsCompleted + " = " + str(round((float(newCasesToday)/float(totalTestsCompleted)*100),2))+"%")
-    print("(New Cases/Total Tests) completed in the last 24 hours")
 
-    print()
-    print("*GTA*")
-    for x in regions.keys():
-        if regions[x].isPartOfGTA():
-            regions[x].printRelevant()
+# def initData():
+#     global prevURL, lastUpdatedTime, initNeeded
+#     with lock:
+#         if (initNeeded):
+#             initNeeded=False
+#             url = pullPDF()
+#             parsePDF(url)
+#             pullCSV()
+#             prevURL = url
+#             lastUpdatedTime=datetime.today()
+            
+#             print("Initialization complete")
 
-    print()
-    print("*Outside of GTA with greater than " + str(per100) + " per 100k*")
-    for x in regions.keys():
-        if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
-            regions[x].printRelevant()
+
+# def printAll(per100 = 2):
+#     print(newCasesToday + "/" + totalTestsCompleted + " = " + str(round((float(newCasesToday)/float(totalTestsCompleted)*100),2))+"%")
+#     print("(New Cases/Total Tests) completed in the last 24 hours")
+
+#     print()
+#     print("*GTA*")
+#     for x in regions.keys():
+#         if regions[x].isPartOfGTA():
+#             regions[x].printRelevant()
+
+#     print()
+#     print("*Outside of GTA with greater than " + str(per100) + " per 100k*")
+#     for x in regions.keys():
+#         if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
+#             regions[x].printRelevant()
 
 
 def pullPDF():
@@ -167,7 +192,8 @@ def pullPDF():
     return currURL
 
 def pullCSV():
-    global totalTestsCompleted, newCasesToday, totalActiveCases, deltaActiveCases
+    global caseInformation
+    # global totalTestsCompleted, newCasesToday, totalActiveCases, deltaActiveCases
     csvURL = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
 
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -180,23 +206,33 @@ def pullCSV():
     csvFile = urlopen(requestWHeader,context = ssl.SSLContext())
 
     df = pandas.read_csv(csvFile)
-    deltaActiveCases = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(2)['Confirmed Positive'].head(1).values[0])
-    if (deltaActiveCases >= 0):
-        deltaActiveCases = '+'+str(deltaActiveCases)
+    # deltaActiveCases = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(2)['Confirmed Positive'].head(1).values[0])
+    caseInformation["DeltaActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(2)['Confirmed Positive'].head(1).values[0])
+    if (caseInformation["DeltaActiveCases"] >= 0):
+        # deltaActiveCases = '+'+str(deltaActiveCases)
+        caseInformation["DeltaActiveCases"] = '+'+str(caseInformation["DeltaActiveCases"])
     else:
-        deltaActiveCases = '-'+str(deltaActiveCases)
-    totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
-    newCasesToday = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
-    totalTestsCompleted = int(df.tail(1)['Total tests completed in the last day'].values[0])
+        # deltaActiveCases = '-'+str(deltaActiveCases)
+        caseInformation["DeltaActiveCases"] = '-'+str(caseInformation["DeltaActiveCases"])
 
-    
+    # totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
+    caseInformation["TotalActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0])
+    # newCasesToday = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
+    caseInformation["NewCasesToday"] = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
+    # totalTestsCompleted = int(df.tail(1)['Total tests completed in the last day'].values[0])
+    caseInformation["TotalTestsCompleted"] = int(df.tail(1)['Total tests completed in the last day'].values[0])
+
+    caseInformation["PercentPositive"] = str(round((float(caseInformation["NewCasesToday"])/float(caseInformation["TotalTestsCompleted"])*100),2))
+
 initData()
+
 if __name__ == "__main__":
     prevURL = ""
     if (len(sys.argv) > 1):
         printAll(int(sys.argv[1]))
     else:
         app.run(host='0.0.0.0',port=config.PORT, debug=config.DEBUG_MODE)
+        
 
 
     
