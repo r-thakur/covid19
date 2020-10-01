@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -146,4 +147,75 @@
 <!--===============================================================================================-->
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>COVID Stats - Ontario</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/main.css') }}">
+<!--===============================================================================================-->
+</head>
+
+<body>
+    <table>
+    <caption>Overall Ontario Stats</caption>
+    <thead>
+        <tr>
+        <th scope="col">Total New Cases</th>
+        <th scope="col">Total Tests in last 24 hours</th>
+        <th scope="col">Percent Positive (%)</th>
+        <th scope="col">Current Active Cases</th>
+        <th scope="col">Delta Active Cases (1 day)</th>
+        <th scope="col">Current Hospital Cases</th>
+        <th scope="col">Delta Hospital Cases (1 day)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td data-label="Total New Cases">{{NewCases}}</td>
+        <td data-label="Total Tests in last 24 hours">{{TotalTests}}</td>
+        <td data-label="Percent Positive (%)">{{PercentPositive}}</td>
+        <td data-label="Current Active Cases">{{ActiveCases}}</td>
+        <td data-label="Delta Active Cases (1 day)">{{DeltaActiveCases}}</td>
+        <td data-label="Current Hospital Cases">{{TotalHospitalizations}}</td>
+        <td data-label="Delta Hospital Cases (1 day)">{{DeltaHospitalizations}}</td>
+        </tr>
+    </tbody>
+    </table>
+
+
+    <table>
+        <caption>GTA Summary</caption>
+        <thead>
+            <tr>
+            <th scope="col">Health District</th>
+            <th scope="col">New Cases Today</th>
+            <th scope="col">Cases Today (Per 100k)</th>
+            <th scope="col">Cases Yesterday</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{GTARows|safe}}
+        </tbody>
+    </table>
+
+    <table>
+        <caption>Non-GTA Summary</caption>
+        <thead>
+            <tr>
+            <th scope="col">Health District</th>
+            <th scope="col">New Cases Today</th>
+            <th scope="col">Cases Today (>{{Per100k}} Per 100k)</th>
+            <th scope="col">Cases Yesterday</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{OutsideRows|safe}}
+        </tbody>
+    </table>
+
+
+</body>
+
+>>>>>>> Stashed changes
 </html>
