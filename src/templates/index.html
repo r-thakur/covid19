@@ -1,149 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Table V04</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="{{ url_for('static',filename='images/icons/favicon.ico') }}"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='bootstrap/css/bootstrap.min.css') }}">
-
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='/animate/animate.css') }}">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='/select2/select2.min.css') }}">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='/perfect-scrollbar/perfect-scrollbar.css') }}">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/util.css') }}">
+	<title>COVID Stats - Ontario</title>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/main.css') }}">
 <!--===============================================================================================-->
 </head>
+
 <body>
-	
-	<div class="limiter">
-		<div class="container-table100">
-			<div class="wrap-table100">
-
-				<div class="table100 ver1 m-b-110">
-					<div class="table100-head">
-						<table>
-							<thead>
-								<tr class="row100 head">
-									<th class="cell100 column1">Total New Cases</th>
-									<th class="cell100 column2">Tests in last 24 hours</th>
-									<th class="cell100 column3">Percent Positive (%)</th>
-									<th class="cell100 column4">Current Active Cases</th>
-									<th class="cell100 column5">Delta Active Cases (1 day)</th>
-								</tr>
-							</thead>
-						</table>
-					</div>
-
-					<div class="table100-body js-pscroll">
-						<table>
-							<tbody>
-								<tr class="row100 body">
-									<td class="cell100 column1">{{NewCases}}</td>
-									<td class="cell100 column2">{{TotalTests}}</td>
-									<td class="cell100 column3">{{PercentPositive}}</td>
-									<td class="cell100 column4">{{ActiveCases}}</td>
-									<td class="cell100 column5">{{DeltaActiveCases}}</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-
-				<div class="table100 ver3 m-b-110">
-					<div class="table100-head">
-						<table>
-							<thead>
-								<tr class="row100 head">
-									<th class="cell100 column1">Health District (GTA)</th>
-									<th class="cell100 column2">Cases Today (Raw)</th>
-									<th class="cell100 column3">Cases Today (Per 100k)</th>
-									<th class="cell100 column4">Cases Yesterday</th>
-								</tr>
-							</thead>
-						</table>
-					</div>
-
-					<div class="table100-body js-pscroll">
-						<table>
-							<tbody>
-								{{GTARows|safe}}
-							</tbody>
-						</table>
-					</div>
-				</div>
-
-		<div class="table100 ver3 m-b-110">
-					<div class="table100-head">
-						<table>
-							<thead>
-								<tr class="row100 head">
-									<th class="cell100 column1">Health District (Outside)</th>
-									<th class="cell100 column2">Cases Today (Raw)</th>
-									<th class="cell100 column3">Cases Today (>{{Per100k}} Per 100k)</th>
-									<th class="cell100 column4">Cases Yesterday</th>
-								</tr>
-							</thead>
-						</table>
-					</div>
-
-					<div class="table100-body js-pscroll">
-						<table>
-							<tbody>
-								{{OutsideRows|safe}}
-							</tbody>
-						</table>
-						
-					</div>
-					
-				</div>
-
-			</div>
-			
-		</div>
-		<div style="text-align: center;">Last Updated: {{LastUpdated}}</div>
-	</div>
+    <table>
+    <caption>Overall Ontario Stats</caption>
+    <thead>
+        <tr>
+        <th scope="col">Total New Cases</th>
+        <th scope="col">Total Tests in last 24 hours</th>
+        <th scope="col">Percent Positive (%)</th>
+        <th scope="col">Current Active Cases</th>
+        <th scope="col">Delta Active Cases (1 day)</th>
+        <th scope="col">Current Hospital Cases</th>
+        <th scope="col">Delta Hospital Cases (1 day)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td data-label="Total New Cases">{{NewCases}}</td>
+        <td data-label="Total Tests in last 24 hours">{{TotalTests}}</td>
+        <td data-label="Percent Positive (%)">{{PercentPositive}}</td>
+        <td data-label="Current Active Cases">{{ActiveCases}}</td>
+        <td data-label="Delta Active Cases (1 day)">{{DeltaActiveCases}}</td>
+        <td data-label="Current Hospital Cases">{{TotalHospitalizations}}</td>
+        <td data-label="Delta Hospital Cases (1 day)">{{DeltaHospitalizations}}</td>
+        </tr>
+    </tbody>
+    </table>
 
 
-<!--===============================================================================================-->		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='/perfect-scrollbar/perfect-scrollbar.css') }}">
+    <table>
+        <caption>GTA Summary</caption>
+        <thead>
+            <tr>
+            <th scope="col">Health District</th>
+            <th scope="col">New Cases Today</th>
+            <th scope="col">Cases Today (Per 100k)</th>
+            <th scope="col">Cases Yesterday</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{GTARows|safe}}
+        </tbody>
+    </table>
 
+    <table>
+        <caption>Non-GTA Summary</caption>
+        <thead>
+            <tr>
+            <th scope="col">Health District</th>
+            <th scope="col">New Cases Today</th>
+            <th scope="col">Cases Today (>{{Per100k}} Per 100k)</th>
+            <th scope="col">Cases Yesterday</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{OutsideRows|safe}}
+        </tbody>
+    </table>
 
-<script type=text/javascript src="{{
-  url_for('static', filename='js/main.js') }}"></script>
-
-	<script type=text/javascript src="{{
-  url_for('static', filename='jquery/jquery-3.2.1.min.js') }}"></script>
-<!--===============================================================================================-->
-	<script src="{{
-  url_for('static', filename='/bootstrap/js/popper.js') }}"></script>
-	<script src="{{
-  url_for('static', filename='/bootstrap/js/bootstrap.min.js') }}"></script>
-<!--===============================================================================================-->
-	<script src="{{
-  url_for('static', filename='/select2/select2.min.js') }}"></script>
-<!--===============================================================================================-->
-	<script src="{{
-  url_for('static', filename='/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-	<script>
-		$('.js-pscroll').each(function(){
-			var ps = new PerfectScrollbar(this);
-
-			$(window).on('resize', function(){
-				ps.update();
-			})
-		});
-			
-		
-	</script>
-<!--===============================================================================================-->
 
 </body>
-</html>
