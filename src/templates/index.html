@@ -38,6 +38,8 @@
 									<th class="cell100 column3">Percent Positive (%)</th>
 									<th class="cell100 column4">Current Active Cases</th>
 									<th class="cell100 column5">Delta Active Cases (1 day)</th>
+									<th class="cell100 column6">Total Hospitalizations</th>
+									<th class="cell100 column7">Delta Hospitalizations (1 day)</th>
 								</tr>
 							</thead>
 						</table>
@@ -47,11 +49,22 @@
 						<table>
 							<tbody>
 								<tr class="row100 body">
+									<td class="cell100 column1"></td>
+									<td class="cell100 column2"></td>
+									<td class="cell100 column3"></td>
+									<td class="cell100 column4"></td>
+									<td class="cell100 column5"></td>
+									<td class="cell100 column6"></td>
+									<td class="cell100 column7"></td>
+								</tr>								
+								<tr class="row100 body">
 									<td class="cell100 column1">{{NewCases}}</td>
 									<td class="cell100 column2">{{TotalTests}}</td>
 									<td class="cell100 column3">{{PercentPositive}}</td>
 									<td class="cell100 column4">{{ActiveCases}}</td>
 									<td class="cell100 column5">{{DeltaActiveCases}}</td>
+									<td class="cell100 column6">{{TotalHospitalizations}}</td>
+									<td class="cell100 column7">{{DeltaHospitalizations}}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -115,12 +128,13 @@
 
 <!--===============================================================================================-->		<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='/perfect-scrollbar/perfect-scrollbar.css') }}">
 
+<script type=text/javascript src="{{
+	url_for('static', filename='jquery/jquery-3.2.1.min.js') }}"></script>
 
 <script type=text/javascript src="{{
   url_for('static', filename='js/main.js') }}"></script>
 
-	<script type=text/javascript src="{{
-  url_for('static', filename='jquery/jquery-3.2.1.min.js') }}"></script>
+
 <!--===============================================================================================-->
 	<script src="{{
   url_for('static', filename='/bootstrap/js/popper.js') }}"></script>

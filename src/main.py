@@ -117,7 +117,7 @@ def covidInfoWithHTML(per100):
             outsideData += '<td class="cell100 column4">' + str(regions[x].getCasesYesterdayString()) + "</td>"
             outsideData += "</tr>"
 
-    return flask.render_template('index.html',NewCases=caseInformation["NewCasesToday"],TotalTests=caseInformation["TotalTestsCompleted"],PercentPositive=caseInformation["PercentPositive"],GTARows=gtaData, OutsideRows = outsideData,ActiveCases = caseInformation["TotalActiveCases"],DeltaActiveCases = caseInformation["DeltaActiveCases"], LastUpdated = lastUpdatedTime.date(), Per100k = per100)
+    return flask.render_template('index.html',NewCases=caseInformation["NewCasesToday"],TotalTests=caseInformation["TotalTestsCompleted"],PercentPositive=caseInformation["PercentPositive"],GTARows=gtaData, OutsideRows = outsideData,ActiveCases = caseInformation["TotalActiveCases"],DeltaActiveCases = caseInformation["DeltaActiveCases"], DeltaHospitalizations = caseInformation["DeltaHospitalizations"], TotalHospitalizations = caseInformation["TotalHospitalizations"], LastUpdated = lastUpdatedTime.date(), Per100k = per100)
 
 @app.route('/refresh')
 def refreshDataEndpoint():
@@ -217,6 +217,17 @@ def pullCSV():
 
     # totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
     caseInformation["TotalActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0])
+
+    caseInformation["TotalHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0])
+    caseInformation["DeltaHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0] - df.tail(2)['Number of patients hospitalized with COVID-19'].head(1).values[0])
+    if (caseInformation["DeltaHospitalizations"] >= 0):
+        # deltaActiveCases = '+'+str(deltaActiveCases)
+        caseInformation["DeltaHospitalizations"] = '+'+str(caseInformation["DeltaHospitalizations"])
+    else:
+        # deltaActiveCases = '-'+str(deltaActiveCases)
+        caseInformation["DeltaHospitalizations"] = '-'+str(caseInformation["DeltaHospitalizations"])
+
+
     # newCasesToday = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
     caseInformation["NewCasesToday"] = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
     # totalTestsCompleted = int(df.tail(1)['Total tests completed in the last day'].values[0])
