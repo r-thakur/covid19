@@ -6,7 +6,7 @@ COPY requirements.txt ./
 
 RUN pip install --upgrade pip
 
-RUN pip install --no-binary --no-cache-dir -r requirements.txt
+RUN pip install --no-binary :all: --no-cache-dir -r requirements.txt
 
 COPY . .
 
