@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 	<title>COVID Stats - Ontario</title>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/mobile.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/mobile.css') }}">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <!--===============================================================================================-->
 </head>
 
 <body>
+    <div style="text-align: center; color:white;"><p>Download the <a href="https://www.canada.ca/en/public-health/services/diseases/coronavirus-disease-covid-19/covid-alert.html">COVID Alert App!</a></p></div>
     <table>
     <caption>Overall Ontario Stats</caption>
     <thead>
@@ -63,7 +65,7 @@
             {{OutsideRows|safe}}
         </tbody>
 	</table>
-	
+    <div style="text-align: center; color:white;"><p>Made by: <a href="https://www.linkedin.com/in/rohit-thakur-76558579/">Rohit</a></p></div>
 	<div style="text-align: center; color:white;"><p>Last Updated: {{LastUpdated}}</p></div>
 
 

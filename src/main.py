@@ -213,7 +213,7 @@ def pullCSV():
         caseInformation["DeltaActiveCases"] = '+'+str(caseInformation["DeltaActiveCases"])
     else:
         # deltaActiveCases = '-'+str(deltaActiveCases)
-        caseInformation["DeltaActiveCases"] = '-'+str(caseInformation["DeltaActiveCases"])
+        caseInformation["DeltaActiveCases"] = str(caseInformation["DeltaActiveCases"])
 
     # totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
     caseInformation["TotalActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0])
@@ -225,7 +225,7 @@ def pullCSV():
         caseInformation["DeltaHospitalizations"] = '+'+str(caseInformation["DeltaHospitalizations"])
     else:
         # deltaActiveCases = '-'+str(deltaActiveCases)
-        caseInformation["DeltaHospitalizations"] = '-'+str(caseInformation["DeltaHospitalizations"])
+        caseInformation["DeltaHospitalizations"] = str(caseInformation["DeltaHospitalizations"])
 
 
     # newCasesToday = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
