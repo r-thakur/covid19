@@ -128,7 +128,7 @@ def refreshDataEndpoint():
 
 def refreshData():
     global prevURL, lastUpdatedTime
-    timeAt1030 = datetime.today().replace(hour = 14, minute = 31, second= 0, microsecond=0)
+    timeAt1030 = datetime.today().replace(hour = 15, minute = 31, second= 0, microsecond=0)
     timeRightNow = datetime.today()
     if (timeRightNow > timeAt1030 and timeAt1030 > lastUpdatedTime):
         url = pullPDF()
