@@ -130,13 +130,13 @@ def refreshData():
     global prevURL, lastUpdatedTime
     timeAt1030 = datetime.today().replace(hour = 15, minute = 31, second= 0, microsecond=0)
     timeRightNow = datetime.today()
-    if (timeRightNow > timeAt1030 and timeAt1030 > lastUpdatedTime):
-        url = pullPDF()
-        if (url != prevURL):
-            parsePDF(url)
-            pullCSV()
-            prevURL = url
-            lastUpdatedTime=datetime.today()
+    #if (timeRightNow > timeAt1030 and timeAt1030 > lastUpdatedTime):
+    url = pullPDF()
+    if (url != prevURL):
+        parsePDF(url)
+        pullCSV()
+        prevURL = url
+        lastUpdatedTime=datetime.today()
 
 def initData():
     global prevURL, lastUpdatedTime
