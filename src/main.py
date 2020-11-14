@@ -117,7 +117,21 @@ def covidInfoWithHTML(per100):
             outsideData += '<td data-label="Cases Yesterday">' + str(regions[x].getCasesYesterdayString()) + "</td>"
             outsideData += "</tr>"
 
-    return flask.render_template('index.html',NewCases=caseInformation["NewCasesToday"],TotalTests=caseInformation["TotalTestsCompleted"],PercentPositive=caseInformation["PercentPositive"],GTARows=gtaData, OutsideRows = outsideData,ActiveCases = caseInformation["TotalActiveCases"],DeltaActiveCases = caseInformation["DeltaActiveCases"], DeltaHospitalizations = caseInformation["DeltaHospitalizations"], TotalHospitalizations = caseInformation["TotalHospitalizations"], LastUpdated = lastUpdatedTime.date(), Per100k = per100)
+    return flask.render_template('index.html',\
+        NewCases=caseInformation["NewCasesToday"],\
+            TotalTests=caseInformation["TotalTestsCompleted"],\
+                PercentPositive=caseInformation["PercentPositive"],\
+                    GTARows=gtaData, \
+                        OutsideRows = outsideData,\
+                            ActiveCases = caseInformation["TotalActiveCases"],\
+                                DeltaActiveCases = caseInformation["DeltaActiveCases"], \
+                                    DeltaHospitalizations = caseInformation["DeltaHospitalizations"], \
+                                        TotalHospitalizations = caseInformation["TotalHospitalizations"], \
+                                            LastUpdated = lastUpdatedTime.date(),\
+                                                Per100k = per100,\
+                                                    DeltaWeekActiveCases = caseInformation["DeltaWeekActiveCases"],\
+                                                        DeltaWeekHospitalizations = caseInformation["DeltaWeekHospitalizations"],\
+                                                            TotalICUCases = caseInformation["TotalICUCases"])
 
 @app.route('/refresh')
 def refreshDataEndpoint():
@@ -215,8 +229,22 @@ def pullCSV():
         # deltaActiveCases = '-'+str(deltaActiveCases)
         caseInformation["DeltaActiveCases"] = str(caseInformation["DeltaActiveCases"])
 
+
+    caseInformation["DeltaWeekActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(7)['Confirmed Positive'].head(1).values[0])
+    if (caseInformation["DeltaWeekActiveCases"] >= 0):
+        # deltaActiveCases = '+'+str(deltaActiveCases)
+        caseInformation["DeltaWeekActiveCases"] = '+'+str(caseInformation["DeltaWeekActiveCases"])
+    else:
+        # deltaActiveCases = '-'+str(deltaActiveCases)
+        caseInformation["DeltaWeekActiveCases"] = str(caseInformation["DeltaWeekActiveCases"])
+
+
     # totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
     caseInformation["TotalActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0])
+
+    caseInformation["TotalICUCases"] = int(df.tail(1)['Number of patients in ICU with COVID-19'].values[0])
+
+    
 
     caseInformation["TotalHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0])
     caseInformation["DeltaHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0] - df.tail(2)['Number of patients hospitalized with COVID-19'].head(1).values[0])
@@ -226,6 +254,15 @@ def pullCSV():
     else:
         # deltaActiveCases = '-'+str(deltaActiveCases)
         caseInformation["DeltaHospitalizations"] = str(caseInformation["DeltaHospitalizations"])
+
+    caseInformation["DeltaWeekHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0] - df.tail(7)['Number of patients hospitalized with COVID-19'].head(1).values[0])
+    if (caseInformation["DeltaWeekHospitalizations"] >= 0):
+        # deltaActiveCases = '+'+str(deltaActiveCases)
+        caseInformation["DeltaWeekHospitalizations"] = '+'+str(caseInformation["DeltaWeekHospitalizations"])
+    else:
+        # deltaActiveCases = '-'+str(deltaActiveCases)
+        caseInformation["DeltaWeekHospitalizations"] = str(caseInformation["DeltaWeekHospitalizations"])
+
 
 
     # newCasesToday = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
