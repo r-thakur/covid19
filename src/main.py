@@ -242,7 +242,10 @@ def pullCSV():
     # totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
     caseInformation["TotalActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0])
 
-    caseInformation["TotalICUCases"] = int(df.tail(1)['Number of patients in ICU with COVID-19'].values[0])
+    if (not df.tail(1)['Number of patients in ICU with COVID-19'].isnull().values.any()):
+        caseInformation["TotalICUCases"] = int(df.tail(1)['Number of patients in ICU with COVID-19'].values[0])
+    else:
+        caseInformation["TotalICUCases"] = "Value not available"
 
     
 
