@@ -14,7 +14,7 @@ import region
 from datetime import datetime, timedelta
 from multiprocessing import Lock
 from flask import Flask
-
+import io
 
 
 app = Flask(__name__)
@@ -40,13 +40,8 @@ def parsePDF(fileLocation):
     requestWHeader = Request(fileLocation, headers=hdr)
     pdfFile = urlopen(requestWHeader,context = ssl.SSLContext())
     data = pdfFile.read()
-    with open("current.pdf", "wb") as code:
-        code.write(data)
-
-
-
-    pdf_file = open("current.pdf",'rb')
-    read_pdf = PyPDF2.PdfFileReader(pdf_file)
+    bytesFile = io.BytesIO(data)
+    read_pdf = PyPDF2.PdfFileReader(bytesFile)
     pages = []
     page = read_pdf.getPage(8)
     pages.append(page)
@@ -86,7 +81,6 @@ def parsePDF(fileLocation):
                 population = int(next(popFile))
                 regions[currRegion].setPopulation(population)     
                 regions[currRegion].calculatePer100()
-    pdf_file.close()
     popFile.close()
 
 @app.route('/')
