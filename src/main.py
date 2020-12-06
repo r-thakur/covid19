@@ -13,7 +13,7 @@ import pandas
 import region
 from datetime import datetime, timedelta
 from multiprocessing import Lock
-from flask import Flask
+from flask import Flask, redirect
 
 
 
@@ -96,42 +96,44 @@ def hello_world():
 
 @app.route('/covidHTML/<per100>')
 def covidInfoWithHTML(per100):
-    refreshData()
-    per100 = int(per100)
-    gtaData = ""
-    for x in regions.keys():
-        if regions[x].isPartOfGTA():
-            gtaData += '<tr>'
-            gtaData += '<td data-label="Health District">' + regions[x].getName() + "</td>"
-            gtaData += '<td data-label="New Cases Today">' + regions[x].getCasesTodayString() + "</td>"
-            gtaData += '<td data-label="Cases Today (Per 100k)">' + str(regions[x].getPer100k()) + "</td>"
-            gtaData += '<td data-label="Cases Yesterday">' + str(regions[x].getCasesYesterdayString()) + "</td>"
-            gtaData += "</tr>"
-    outsideData = ""
-    for x in regions.keys():
-        if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
-            outsideData += '<tr>'
-            outsideData += '<td data-label="Health District">' + regions[x].getName() + "</td>"
-            outsideData += '<td data-label="New Cases Today">' + regions[x].getCasesTodayString() + "</td>"
-            outsideData += '<td data-label="Cases Today (Per 100k)">' + str(regions[x].getPer100k()) + "</td>"
-            outsideData += '<td data-label="Cases Yesterday">' + str(regions[x].getCasesYesterdayString()) + "</td>"
-            outsideData += "</tr>"
+    return redirect("http://covid19.rthakur.com/", code=301)
 
-    return flask.render_template('index.html',\
-        NewCases=caseInformation["NewCasesToday"],\
-            TotalTests=caseInformation["TotalTestsCompleted"],\
-                PercentPositive=caseInformation["PercentPositive"],\
-                    GTARows=gtaData, \
-                        OutsideRows = outsideData,\
-                            ActiveCases = caseInformation["TotalActiveCases"],\
-                                DeltaActiveCases = caseInformation["DeltaActiveCases"], \
-                                    DeltaHospitalizations = caseInformation["DeltaHospitalizations"], \
-                                        TotalHospitalizations = caseInformation["TotalHospitalizations"], \
-                                            LastUpdated = lastUpdatedTime.date(),\
-                                                Per100k = per100,\
-                                                    DeltaWeekActiveCases = caseInformation["DeltaWeekActiveCases"],\
-                                                        DeltaWeekHospitalizations = caseInformation["DeltaWeekHospitalizations"],\
-                                                            TotalICUCases = caseInformation["TotalICUCases"])
+    # refreshData()
+    # per100 = int(per100)
+    # gtaData = ""
+    # for x in regions.keys():
+    #     if regions[x].isPartOfGTA():
+    #         gtaData += '<tr>'
+    #         gtaData += '<td data-label="Health District">' + regions[x].getName() + "</td>"
+    #         gtaData += '<td data-label="New Cases Today">' + regions[x].getCasesTodayString() + "</td>"
+    #         gtaData += '<td data-label="Cases Today (Per 100k)">' + str(regions[x].getPer100k()) + "</td>"
+    #         gtaData += '<td data-label="Cases Yesterday">' + str(regions[x].getCasesYesterdayString()) + "</td>"
+    #         gtaData += "</tr>"
+    # outsideData = ""
+    # for x in regions.keys():
+    #     if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
+    #         outsideData += '<tr>'
+    #         outsideData += '<td data-label="Health District">' + regions[x].getName() + "</td>"
+    #         outsideData += '<td data-label="New Cases Today">' + regions[x].getCasesTodayString() + "</td>"
+    #         outsideData += '<td data-label="Cases Today (Per 100k)">' + str(regions[x].getPer100k()) + "</td>"
+    #         outsideData += '<td data-label="Cases Yesterday">' + str(regions[x].getCasesYesterdayString()) + "</td>"
+    #         outsideData += "</tr>"
+
+    # return flask.render_template('index.html',\
+    #     NewCases=caseInformation["NewCasesToday"],\
+    #         TotalTests=caseInformation["TotalTestsCompleted"],\
+    #             PercentPositive=caseInformation["PercentPositive"],\
+    #                 GTARows=gtaData, \
+    #                     OutsideRows = outsideData,\
+    #                         ActiveCases = caseInformation["TotalActiveCases"],\
+    #                             DeltaActiveCases = caseInformation["DeltaActiveCases"], \
+    #                                 DeltaHospitalizations = caseInformation["DeltaHospitalizations"], \
+    #                                     TotalHospitalizations = caseInformation["TotalHospitalizations"], \
+    #                                         LastUpdated = lastUpdatedTime.date(),\
+    #                                             Per100k = per100,\
+    #                                                 DeltaWeekActiveCases = caseInformation["DeltaWeekActiveCases"],\
+    #                                                     DeltaWeekHospitalizations = caseInformation["DeltaWeekHospitalizations"],\
+    #                                                         TotalICUCases = caseInformation["TotalICUCases"])
 
 @app.route('/refresh')
 def refreshDataEndpoint():
@@ -275,7 +277,7 @@ def pullCSV():
 
     caseInformation["PercentPositive"] = str(round((float(caseInformation["NewCasesToday"])/float(caseInformation["TotalTestsCompleted"])*100),2))
 
-initData()
+#initData()
 
 if __name__ == "__main__":
     prevURL = ""
