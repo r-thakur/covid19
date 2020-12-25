@@ -13,24 +13,24 @@
     <caption>Overall Ontario Stats</caption>
     <thead>
         <tr>
-        <th scope="col">Total New Cases</th>
-        <th scope="col">Total Tests in last 24 hours</th>
-        <th scope="col">Percent Positive (%)</th>
+        <th scope="col">Cases/Tests in last 24 hours</th>
         <th scope="col">Current Active Cases</th>
         <th scope="col">Delta Active Cases (Week)</th>
         <th scope="col">Current Hospital Cases</th>
         <th scope="col">Delta Hospital Cases (Week)</th>
+        <th scope="col">Total Deaths</th>
+        <th scope="col">Delta Deaths (Week)</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-        <td data-label="Total New Cases">{{NewCases}}</td>
-        <td data-label="Total Tests in last 24 hours">{{TotalTests}}</td>
-        <td data-label="Percent Positive (%)">{{PercentPositive}}</td>
+        <td data-label="Cases/Tests in last 24 hours">{{NewCases}}/{{TotalTests}} = {{PercentPositive}}%</td>
         <td data-label="Current Active Cases">{{ActiveCases}} ({{DeltaActiveCases}})</td>
         <td data-label="Delta Active Cases (Week)">{{DeltaWeekActiveCases}}</td>
         <td data-label="Current Hospital Cases">{{TotalHospitalizations}} ({{DeltaHospitalizations}}); {{TotalICUCases}} in ICU</td>
         <td data-label="Delta Hospital Cases (Week)">{{DeltaWeekHospitalizations}}</td>
+        <td data-label="Total Deaths">{{Deaths}}</td>
+        <td data-label="Delta Deaths (Week)">{{DeltaWeekDeaths}}</td>
         </tr>
     </tbody>
     </table>

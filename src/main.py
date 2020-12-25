@@ -125,7 +125,9 @@ def covidInfoWithHTML(per100):
                                                 Per100k = per100,\
                                                     DeltaWeekActiveCases = caseInformation["DeltaWeekActiveCases"],\
                                                         DeltaWeekHospitalizations = caseInformation["DeltaWeekHospitalizations"],\
-                                                            TotalICUCases = caseInformation["TotalICUCases"])
+                                                            TotalICUCases = caseInformation["TotalICUCases"],\
+                                                                Deaths = caseInformation["Deaths"],\
+                                                                    DeltaWeekDeaths = caseInformation["DeltaWeekDeaths"])
 
 @app.route('/refresh')
 def refreshDataEndpoint():
@@ -201,7 +203,6 @@ def pullPDF():
 
 def pullCSV():
     global caseInformation
-    # global totalTestsCompleted, newCasesToday, totalActiveCases, deltaActiveCases
     csvURL = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
 
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -213,60 +214,61 @@ def pullCSV():
     requestWHeader = Request(csvURL, headers=hdr)
     csvFile = urlopen(requestWHeader,context = ssl.SSLContext())
 
+
     df = pandas.read_csv(csvFile)
-    # deltaActiveCases = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(2)['Confirmed Positive'].head(1).values[0])
-    caseInformation["DeltaActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(2)['Confirmed Positive'].head(1).values[0])
+    lastRow = df.tail(1)
+    secondLastRow = df.tail(2)
+    seventhLastRow = df.tail(7)
+
+    
+    caseInformation["DeltaActiveCases"] = int(lastRow['Confirmed Positive'].values[0] - secondLastRow['Confirmed Positive'].head(1).values[0])
     if (caseInformation["DeltaActiveCases"] >= 0):
-        # deltaActiveCases = '+'+str(deltaActiveCases)
         caseInformation["DeltaActiveCases"] = '+'+str(caseInformation["DeltaActiveCases"])
     else:
-        # deltaActiveCases = '-'+str(deltaActiveCases)
         caseInformation["DeltaActiveCases"] = str(caseInformation["DeltaActiveCases"])
 
 
-    caseInformation["DeltaWeekActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0] - df.tail(7)['Confirmed Positive'].head(1).values[0])
+    caseInformation["DeltaWeekActiveCases"] = int(lastRow['Confirmed Positive'].values[0] - seventhLastRow['Confirmed Positive'].head(1).values[0])
     if (caseInformation["DeltaWeekActiveCases"] >= 0):
-        # deltaActiveCases = '+'+str(deltaActiveCases)
         caseInformation["DeltaWeekActiveCases"] = '+'+str(caseInformation["DeltaWeekActiveCases"])
     else:
-        # deltaActiveCases = '-'+str(deltaActiveCases)
         caseInformation["DeltaWeekActiveCases"] = str(caseInformation["DeltaWeekActiveCases"])
 
 
-    # totalActiveCases = int(df.tail(1)['Confirmed Positive'].values[0])
-    caseInformation["TotalActiveCases"] = int(df.tail(1)['Confirmed Positive'].values[0])
+    caseInformation["TotalActiveCases"] = int(lastRow['Confirmed Positive'].values[0])
 
-    if (not df.tail(1)['Number of patients in ICU with COVID-19'].isnull().values.any()):
-        caseInformation["TotalICUCases"] = int(df.tail(1)['Number of patients in ICU with COVID-19'].values[0])
+    if (not lastRow['Number of patients in ICU with COVID-19'].isnull().values.any()):
+        caseInformation["TotalICUCases"] = int(lastRow['Number of patients in ICU with COVID-19'].values[0])
     else:
         caseInformation["TotalICUCases"] = "Value not available"
 
     
 
-    caseInformation["TotalHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0])
-    caseInformation["DeltaHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0] - df.tail(2)['Number of patients hospitalized with COVID-19'].head(1).values[0])
+    caseInformation["TotalHospitalizations"] = int(lastRow['Number of patients hospitalized with COVID-19'].values[0])
+    caseInformation["DeltaHospitalizations"] = int(lastRow['Number of patients hospitalized with COVID-19'].values[0] - secondLastRow['Number of patients hospitalized with COVID-19'].head(1).values[0])
     if (caseInformation["DeltaHospitalizations"] >= 0):
-        # deltaActiveCases = '+'+str(deltaActiveCases)
         caseInformation["DeltaHospitalizations"] = '+'+str(caseInformation["DeltaHospitalizations"])
     else:
-        # deltaActiveCases = '-'+str(deltaActiveCases)
         caseInformation["DeltaHospitalizations"] = str(caseInformation["DeltaHospitalizations"])
 
-    caseInformation["DeltaWeekHospitalizations"] = int(df.tail(1)['Number of patients hospitalized with COVID-19'].values[0] - df.tail(7)['Number of patients hospitalized with COVID-19'].head(1).values[0])
+    caseInformation["DeltaWeekHospitalizations"] = int(lastRow['Number of patients hospitalized with COVID-19'].values[0] - seventhLastRow['Number of patients hospitalized with COVID-19'].head(1).values[0])
     if (caseInformation["DeltaWeekHospitalizations"] >= 0):
-        # deltaActiveCases = '+'+str(deltaActiveCases)
         caseInformation["DeltaWeekHospitalizations"] = '+'+str(caseInformation["DeltaWeekHospitalizations"])
     else:
-        # deltaActiveCases = '-'+str(deltaActiveCases)
         caseInformation["DeltaWeekHospitalizations"] = str(caseInformation["DeltaWeekHospitalizations"])
 
 
+    caseInformation["Deaths"] = int(lastRow['Deaths'].values[0])
+    caseInformation["DeltaWeekDeaths"] = int(lastRow['Deaths'].values[0] - seventhLastRow['Deaths'].head(1).values[0])
+    if (caseInformation["DeltaWeekDeaths"] >= 0):
+        caseInformation["DeltaWeekDeaths"] = '+'+str(caseInformation["DeltaWeekDeaths"])
+    else:
+        caseInformation["DeltaWeekDeaths"] = str(caseInformation["DeltaWeekDeaths"])
 
-    # newCasesToday = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
-    caseInformation["NewCasesToday"] = int(df.tail(1)['Total Cases'].values[0] - df.tail(2)['Total Cases'].head(1).values[0])
-    # totalTestsCompleted = int(df.tail(1)['Total tests completed in the last day'].values[0])
-    caseInformation["TotalTestsCompleted"] = int(df.tail(1)['Total tests completed in the last day'].values[0])
 
+
+    caseInformation["NewCasesToday"] = int(lastRow['Total Cases'].values[0] - secondLastRow['Total Cases'].head(1).values[0])
+    caseInformation["TotalTestsCompleted"] = int(lastRow['Total tests completed in the last day'].values[0])
     caseInformation["PercentPositive"] = str(round((float(caseInformation["NewCasesToday"])/float(caseInformation["TotalTestsCompleted"])*100),2))
 
 initData()
