@@ -201,6 +201,15 @@ def pullPDF():
 
     return currURL
 
+
+def checkIfEmptyAndConvertToInt(cell):
+    if (not cell.isnull().values.any()):
+        int(cell.values[0])
+    else:
+        return "Not Available"
+
+
+
 def pullCSV():
     global caseInformation
     csvURL = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
@@ -268,8 +277,12 @@ def pullCSV():
 
 
     caseInformation["NewCasesToday"] = int(lastRow['Total Cases'].values[0] - secondLastRow['Total Cases'].head(1).values[0])
-    caseInformation["TotalTestsCompleted"] = int(lastRow['Total tests completed in the last day'].values[0])
-    caseInformation["PercentPositive"] = str(round((float(caseInformation["NewCasesToday"])/float(caseInformation["TotalTestsCompleted"])*100),2))
+    caseInformation["TotalTestsCompleted"] = checkIfEmptyAndConvertToInt(lastRow['Total tests completed in the last day'])
+
+    if (caseInformation["TotalTestsCompleted"] is not "Not Available"):
+        caseInformation["PercentPositive"] = str(round((float(caseInformation["NewCasesToday"])/float(caseInformation["TotalTestsCompleted"])*100),2))
+    else:
+        caseInformation["PercentPositive"] = "?"
 
 initData()
 
