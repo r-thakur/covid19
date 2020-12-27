@@ -204,7 +204,7 @@ def pullPDF():
 
 def checkIfEmptyAndConvertToInt(cell):
     if (not cell.isnull().values.any()):
-        int(cell.values[0])
+        return int(cell.values[0])
     else:
         return "Not Available"
 
@@ -278,6 +278,7 @@ def pullCSV():
 
     caseInformation["NewCasesToday"] = int(lastRow['Total Cases'].values[0] - secondLastRow['Total Cases'].head(1).values[0])
     caseInformation["TotalTestsCompleted"] = checkIfEmptyAndConvertToInt(lastRow['Total tests completed in the last day'])
+    #print(caseInformation["TotalTestsCompleted"])
 
     if (caseInformation["TotalTestsCompleted"] is not "Not Available"):
         caseInformation["PercentPositive"] = str(round((float(caseInformation["NewCasesToday"])/float(caseInformation["TotalTestsCompleted"])*100),2))
