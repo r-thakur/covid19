@@ -251,7 +251,7 @@ def pullCSV():
 
     caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"].replace(",","")) - int(caseInformation["PrevVaccinesAdministered"].replace(",","")))
 
-    vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesAdministered"].replace(",","")))/(14.57*10000),2))+"%"
+    vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesAdministered"].replace(",","")))/(14.75*10000),2))+"%"
     caseInformation["VaccinePercentage"] = vaccinePerPopulationPercentage
 
 
