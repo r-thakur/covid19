@@ -127,7 +127,11 @@ def covidInfoWithHTML(per100):
                                                         DeltaWeekHospitalizations = caseInformation["DeltaWeekHospitalizations"],\
                                                             TotalICUCases = caseInformation["TotalICUCases"],\
                                                                 Deaths = caseInformation["Deaths"],\
-                                                                    DeltaWeekDeaths = caseInformation["DeltaWeekDeaths"])
+                                                                    DeltaWeekDeaths = caseInformation["DeltaWeekDeaths"],\
+                                                                        VaccineDate = caseInformation["VaccineDate"],\
+                                                                            VaccinesAdministered = caseInformation["VaccinesAdministered"],\
+                                                                                VaccinePercentage = caseInformation["VaccinePercentage"])
+
 
 @app.route('/refresh')
 def refreshDataEndpoint():
@@ -214,6 +218,8 @@ def pullCSV():
     global caseInformation
     csvURL = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
 
+    vaccineURL = "https://data.ontario.ca/dataset/752ce2b7-c15a-4965-a3dc-397bf405e7cc/resource/8a89caa9-511c-4568-af89-7f2174b4378c/download/vaccine_doses.csv"
+
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
@@ -222,6 +228,19 @@ def pullCSV():
     'Connection': 'keep-alive'}
     requestWHeader = Request(csvURL, headers=hdr)
     csvFile = urlopen(requestWHeader,context = ssl.SSLContext())
+
+    vaccineWHeader = Request(vaccineURL, headers=hdr)
+    vaccineData = urlopen(vaccineWHeader,context = ssl.SSLContext())
+
+
+    vaccineDF = pandas.read_csv(vaccineData)
+    lastVaccineRow = vaccineDF.tail(1)
+    caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
+    caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0]
+
+
+    vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesAdministered"].replace(",","")))/(14.57*10000),2))+"%"
+    caseInformation["VaccinePercentage"] = vaccinePerPopulationPercentage
 
 
     df = pandas.read_csv(csvFile)
