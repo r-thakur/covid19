@@ -132,7 +132,9 @@ def covidInfoWithHTML(per100):
                                                                             VaccinesAdministered = caseInformation["VaccinesAdministered"],\
                                                                                 VaccinePercentage = caseInformation["VaccinePercentage"],\
                                                                                     PrevVaccineDate= caseInformation["PrevVaccineDate"],\
-                                                                                        DeltaVaccinesAdministered = caseInformation["DeltaVaccinesAdministered"])
+                                                                                        DeltaVaccinesAdministered = caseInformation["DeltaVaccinesAdministered"],\
+                                                                                            LastUpdatedDate = caseInformation["LastUpdatedDate"],\
+                                                                                                PDFUpdatedDate = caseInformation["PDFUpdatedDate"])
 
 
 @app.route('/refresh')
@@ -196,6 +198,7 @@ def initData():
 
 
 def pullPDF():
+    global caseInformation
     pdfFilePage = requests.get("https://covid-19.ontario.ca/covid-19-epidemiologic-summaries-public-health-ontario")
     html = pdfFilePage.text
     soup = BeautifulSoup(html, "html.parser")
@@ -204,6 +207,8 @@ def pullPDF():
     #x = re.findall(regexString, linkLookupStr)[0]
 
     currURL = str(linkLookupStr[3]).split('\"')[1]
+
+    caseInformation["PDFUpdatedDate"] = (re.findall("[0-9]+-[0-9]+-[0-9]+",currURL))[0]
 
     return currURL
 
@@ -256,6 +261,7 @@ def pullCSV():
     seventhLastRow = df.tail(7)
 
     
+    caseInformation["LastUpdatedDate"] = datetime.strptime(lastRow['Reported Date'].values[0], "%m/%d/%Y").strftime("%Y-%m-%d")  
     caseInformation["DeltaActiveCases"] = int(lastRow['Confirmed Positive'].values[0] - secondLastRow['Confirmed Positive'].head(1).values[0])
     if (caseInformation["DeltaActiveCases"] >= 0):
         caseInformation["DeltaActiveCases"] = '+'+str(caseInformation["DeltaActiveCases"])
