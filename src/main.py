@@ -130,7 +130,9 @@ def covidInfoWithHTML(per100):
                                                                     DeltaWeekDeaths = caseInformation["DeltaWeekDeaths"],\
                                                                         VaccineDate = caseInformation["VaccineDate"],\
                                                                             VaccinesAdministered = caseInformation["VaccinesAdministered"],\
-                                                                                VaccinePercentage = caseInformation["VaccinePercentage"])
+                                                                                VaccinePercentage = caseInformation["VaccinePercentage"],\
+                                                                                    PrevVaccineDate= caseInformation["PrevVaccineDate"],\
+                                                                                        DeltaVaccinesAdministered = caseInformation["DeltaVaccinesAdministered"])
 
 
 @app.route('/refresh')
@@ -235,9 +237,14 @@ def pullCSV():
 
     vaccineDF = pandas.read_csv(vaccineData)
     lastVaccineRow = vaccineDF.tail(1)
+    prevVaccineRow = vaccineDF.tail(2).head(1)
     caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
-    caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0]
+    caseInformation["PrevVaccineDate"] = prevVaccineRow["report_date"].values[0]
 
+    caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0]
+    caseInformation["PrevVaccinesAdministered"] = prevVaccineRow["total_doses_administered"].values[0]
+
+    caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"].replace(",","")) - int(caseInformation["PrevVaccinesAdministered"].replace(",","")))
 
     vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesAdministered"].replace(",","")))/(14.57*10000),2))+"%"
     caseInformation["VaccinePercentage"] = vaccinePerPopulationPercentage
