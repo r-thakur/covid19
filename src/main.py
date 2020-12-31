@@ -261,7 +261,9 @@ def pullCSV():
     seventhLastRow = df.tail(7)
 
     
-    caseInformation["LastUpdatedDate"] = datetime.strptime(lastRow['Reported Date'].values[0], "%m/%d/%Y").strftime("%Y-%m-%d")  
+    #caseInformation["LastUpdatedDate"] = datetime.strptime(lastRow['Reported Date'].values[0], "%m/%d/%Y").strftime("%Y-%m-%d")  
+    caseInformation["LastUpdatedDate"] = lastRow['Reported Date'].values[0]
+
     caseInformation["DeltaActiveCases"] = int(lastRow['Confirmed Positive'].values[0] - secondLastRow['Confirmed Positive'].head(1).values[0])
     if (caseInformation["DeltaActiveCases"] >= 0):
         caseInformation["DeltaActiveCases"] = '+'+str(caseInformation["DeltaActiveCases"])
