@@ -53,7 +53,7 @@ def parsePDF(fileLocation):
     for page in pages:
         page_content = page.extractText().replace("\n","")
         # print(page_content)
-        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[-0-9]+ +[-0-9]+", page_content)
+        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[-0-9*]+ +[-0-9*]+", page_content)
         healthUnits = []
         # x = x.split(" ")
         # print(x)
@@ -62,8 +62,8 @@ def parsePDF(fileLocation):
                 healthUnits.append(subString)
         for subString in healthUnits:
             healthUnitsWithValues = subString.split(" ")
-            currLastDay = healthUnitsWithValues[-2]
-            currDay = healthUnitsWithValues[-1]
+            currLastDay = re.sub('[^0-9]','', healthUnitsWithValues[-2]) 
+            currDay = re.sub('[^0-9]','', healthUnitsWithValues[-1])  
             # print(currDay,currLastDay)
             #print(healthUnitsWithValues)
             tempName = ""
