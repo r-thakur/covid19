@@ -23,6 +23,10 @@ caseInformation = {}
 lastUpdatedTime = ""
 prevURL = ""
 
+vaccineUpdateDate = ""
+ontarioUpdateDate = ""
+pdfUpdateDate = ""
+
 # lock = Lock()
 # initNeeded = True
 
@@ -153,9 +157,9 @@ def refreshData():
     url = pullPDF()
     if (url != prevURL):
         parsePDF(url)
-        pullCSV()
         prevURL = url
-        lastUpdatedTime=datetime.today()
+    if (pdfUpdateDate > vaccineUpdateDate or pdfUpdateDate > ontarioUpdateDate):
+        pullCSV()
 
 def initData():
     global prevURL, lastUpdatedTime
@@ -199,7 +203,7 @@ def initData():
 
 
 def pullPDF():
-    global caseInformation
+    global caseInformation, pdfUpdateDate
     pdfFilePage = requests.get("https://covid-19.ontario.ca/covid-19-epidemiologic-summaries-public-health-ontario")
     html = pdfFilePage.text
     soup = BeautifulSoup(html, "html.parser")
@@ -210,7 +214,7 @@ def pullPDF():
     currURL = str(linkLookupStr[3]).split('\"')[1]
 
     caseInformation["PDFUpdatedDate"] = (re.findall("[0-9]+-[0-9]+-[0-9]+",currURL))[0]
-
+    pdfUpdateDate = datetime.strptime(caseInformation["PDFUpdatedDate"], '%Y-%m-%d')
     return currURL
 
 
@@ -223,7 +227,7 @@ def checkIfEmptyAndConvertToInt(cell):
 
 
 def pullCSV():
-    global caseInformation
+    global caseInformation, vaccineUpdateDate, ontarioUpdateDate
     csvURL = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
 
     vaccineURL = "https://data.ontario.ca/dataset/752ce2b7-c15a-4965-a3dc-397bf405e7cc/resource/8a89caa9-511c-4568-af89-7f2174b4378c/download/vaccine_doses.csv"
@@ -248,6 +252,7 @@ def pullCSV():
     caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
     try:
         caseInformation["VaccineDate"] = datetime.strptime(caseInformation["VaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
+        vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
     except:
         pass
 
@@ -277,6 +282,10 @@ def pullCSV():
     
     #caseInformation["LastUpdatedDate"] = datetime.strptime(lastRow['Reported Date'].values[0], "%m/%d/%Y").strftime("%Y-%m-%d")  
     caseInformation["LastUpdatedDate"] = lastRow['Reported Date'].values[0]
+    try:
+        ontarioUpdateDate = datetime.strptime(caseInformation["LastUpdatedDate"], '%Y-%m-%d')
+    except:
+        pass
 
     caseInformation["DeltaActiveCases"] = int(lastRow['Confirmed Positive'].values[0] - secondLastRow['Confirmed Positive'].head(1).values[0])
     if (caseInformation["DeltaActiveCases"] >= 0):
