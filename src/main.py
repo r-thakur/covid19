@@ -245,7 +245,16 @@ def pullCSV():
     lastVaccineRow = vaccineDF.tail(1)
     prevVaccineRow = vaccineDF.tail(2).head(1)
     caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
+    try:
+        caseInformation["VaccineDate"] = datetime.strptime(caseInformation["VaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
+    except:
+        pass
+
     caseInformation["PrevVaccineDate"] = prevVaccineRow["report_date"].values[0]
+    try:
+        caseInformation["PrevVaccineDate"] = datetime.strptime(caseInformation["PrevVaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
+    except:
+        pass
 
     caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0].replace(",","")
     caseInformation["VaccinesCompleted"] = lastVaccineRow["total_vaccinations_completed"].values[0].replace(",","")
