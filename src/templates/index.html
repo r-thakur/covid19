@@ -9,30 +9,62 @@
 
 <body>
     <div style="text-align: center; color:white;"><p>Download the <a href="https://www.canada.ca/en/public-health/services/diseases/coronavirus-disease-covid-19/covid-alert.html">COVID Alert App!</a></p></div>
+    
     <table>
-    <caption>Overall Ontario Stats (Data as of: {{LastUpdatedDate}})</caption>
+        <caption>Ontario Vaccine Stats (Data as of: {{VaccineDate}})</caption>
+        <thead>
+            <tr>
+            <th scope="col">Doses given since {{PrevVaccineDate}}</th>
+            <th scope="col">Total Doses Given</th>
+            <th scope="col">Population Vaccinated (Both doses)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td data-label="Doses given since {{PrevVaccineDate}}">{{DeltaVaccinesAdministered}}</td>
+            <td data-label="Total Doses Given">{{VaccinesAdministered}}</td>
+            <td data-label="Population Vaccinated (Both doses)">{{VaccinesCompleted}} ({{VaccinePercentage}})</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table>
+        <caption>Ontario Case Stats (Data as of: {{LastUpdatedDate}})</caption>
+        <thead>
+            <tr>
+            <th scope="col">Cases/Tests in last 24 hours</th>
+            <th scope="col">Current Active Cases</th>
+            <th scope="col">Delta Active Cases (Week)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td data-label="Cases/Tests in last 24 hours">{{NewCases}}/{{TotalTests}} = {{PercentPositive}}%</td>
+            <td data-label="Current Active Cases">{{ActiveCases}} ({{DeltaActiveCases}} in 24h)</td>
+            <td data-label="Delta Active Cases (Week)">{{DeltaWeekActiveCases}}</td>
+            </tr>
+        </tbody>
+    </table>        
+    
+    
+    <table>
+    <caption>Ontario Hospital Stats (Data as of: {{LastUpdatedDate}})</caption>
     <thead>
         <tr>
-        <th scope="col">Cases/Tests in last 24 hours</th>
-        <th scope="col">Current Active Cases</th>
-        <th scope="col">Delta Active Cases (Week)</th>
         <th scope="col">Current Hospital Cases</th>
         <th scope="col">Delta Hospital Cases (Week)</th>
+        <th scope="col">Current ICU Patients</th>
         <th scope="col">Total Deaths</th>
         <th scope="col">Delta Deaths (Week)</th>
-        <th scope="col">Vaccines Given (as of: {{VaccineDate}})</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-        <td data-label="Cases/Tests in last 24 hours">{{NewCases}}/{{TotalTests}} = {{PercentPositive}}%</td>
-        <td data-label="Current Active Cases">{{ActiveCases}} ({{DeltaActiveCases}} in 24h)</td>
-        <td data-label="Delta Active Cases (Week)">{{DeltaWeekActiveCases}}</td>
-        <td data-label="Current Hospital Cases">{{TotalHospitalizations}} ({{DeltaHospitalizations}} in 24h); {{TotalICUCases}} in ICU</td>
+        <td data-label="Current Hospital Cases">{{TotalHospitalizations}} ({{DeltaHospitalizations}} in 24h)</td>
         <td data-label="Delta Hospital Cases (Week)">{{DeltaWeekHospitalizations}}</td>
+        <td data-label="Current ICU Patients">{{TotalICUCases}}</td>
         <td data-label="Total Deaths">{{Deaths}}</td>
         <td data-label="Delta Deaths (Week)">{{DeltaWeekDeaths}}</td>
-        <td data-label="Vaccines Given (as of: {{VaccineDate}})">{{VaccinesAdministered}} (+{{DeltaVaccinesAdministered}} since {{PrevVaccineDate}}); {{VaccinePercentage}} of Ontario pop.</td>
         </tr>
     </tbody>
     </table>
@@ -54,7 +86,7 @@
     </table>
 
     <table>
-        <caption>Non-GTA Summary (Data as of: {{PDFUpdatedDate}})</caption>
+        <caption>Outside of GTA Summary (Data as of: {{PDFUpdatedDate}})</caption>
         <thead>
             <tr>
             <th scope="col">Health District</th>
