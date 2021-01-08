@@ -53,7 +53,7 @@ def parsePDF(fileLocation):
     for page in pages:
         page_content = page.extractText().replace("\n","")
         # print(page_content)
-        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[-0-9*]+ +[-0-9*]+", page_content)
+        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[-0-9,*]+ +[-0-9,*]+", page_content)
         healthUnits = []
         # x = x.split(" ")
         # print(x)
@@ -242,6 +242,7 @@ def pullCSV():
 
 
     vaccineDF = pandas.read_csv(vaccineData)
+    vaccineDF.dropna(subset = ["report_date"], inplace=True)
     lastVaccineRow = vaccineDF.tail(1)
     prevVaccineRow = vaccineDF.tail(2).head(1)
     caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
@@ -258,6 +259,7 @@ def pullCSV():
 
     caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0].replace(",","")
     caseInformation["VaccinesCompleted"] = lastVaccineRow["total_vaccinations_completed"].values[0].replace(",","")
+    #print(caseInformation["VaccinesAdministered"])
     caseInformation["PrevVaccinesAdministered"] = prevVaccineRow["total_doses_administered"].values[0]
 
     caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"]) - int(caseInformation["PrevVaccinesAdministered"].replace(",","")))
