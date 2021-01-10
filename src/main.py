@@ -59,25 +59,22 @@ def parsePDF(fileLocation):
         # print(page_content)
         x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[-0-9,*]+ +[-0-9,*]+", page_content)
         healthUnits = []
-        # x = x.split(" ")
-        # print(x)
         for subString in x:
             if "health" in subString.lower():
                 healthUnits.append(subString)
         for subString in healthUnits:
             healthUnitsWithValues = subString.split(" ")
+
+            healthUnitsWithValues = list(filter(None, healthUnitsWithValues)) 
+
             currLastDay = re.sub('[^0-9]','', healthUnitsWithValues[-2]) 
             currDay = re.sub('[^0-9]','', healthUnitsWithValues[-1])  
-            # print(currDay,currLastDay)
-            #print(healthUnitsWithValues)
             tempName = ""
             for x in healthUnitsWithValues[:-2]:
                 tempName = tempName + x + " "
             tempName = tempName[:-1]
-            # print(tempName)
             tempRegion = region.Region(tempName,0,currDay,currLastDay)
             regions[tempName] = tempRegion
-            
         popFile = open("HealthUnitPopulations.txt",'r')
         for x in popFile:
             currRegion = x.replace("\n","")
@@ -114,7 +111,6 @@ def covidInfoWithHTML(per100):
             outsideData += '<td data-label="Cases Today (Per 100k)">' + str(regions[x].getPer100k()) + "</td>"
             outsideData += '<td data-label="Cases Yesterday">' + str(regions[x].getCasesYesterdayString()) + "</td>"
             outsideData += "</tr>"
-
     return flask.render_template('index.html',\
         NewCases=caseInformation["NewCasesToday"],\
             TotalTests=caseInformation["TotalTestsCompleted"],\
