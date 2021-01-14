@@ -35,17 +35,34 @@ def parsePDF(fileLocation):
     regions.clear()
 
     print(fileLocation)
-    hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-       'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-       'Accept-Encoding': 'none',
-       'Accept-Language': 'en-US,en;q=0.8',
-       'Connection': 'keep-alive'}
+
+    '''
+    hdr = {'sec-ch-ua': '"Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"',
+  'sec-ch-ua-mobile': '?0',
+  'Upgrade-Insecure-Requests': '1',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+  'accept': '*/*'}
     requestWHeader = Request(fileLocation, headers=hdr)
     pdfFile = urlopen(requestWHeader,context = ssl.SSLContext())
     data = pdfFile.read()
     bytesFile = io.BytesIO(data)
     read_pdf = PyPDF2.PdfFileReader(bytesFile)
+    '''
+
+    payload={}
+    headers = {
+    'sec-ch-ua': '"Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"',
+    'sec-ch-ua-mobile': '?0',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+    }
+
+    response = requests.request("GET", fileLocation, headers=headers, data=payload)
+    data = response.content
+    bytesFile = io.BytesIO(data)
+    read_pdf = PyPDF2.PdfFileReader(bytesFile)
+
+
     pages = []
     page = read_pdf.getPage(8)
     pages.append(page)
