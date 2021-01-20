@@ -74,7 +74,7 @@ def parsePDF(fileLocation):
     for page in pages:
         page_content = page.extractText().replace("\n","")
         # print(page_content)
-        x = re.findall("[A-Z][a-z&A-Z ,/-]+ +[-0-9,*]+ +[-0-9,*]+", page_content)
+        x = re.findall("[A-Z][a-z&A-Z ,*/-]+ +[-0-9,*]+ +[-0-9,*]+", page_content)
         healthUnits = []
         for subString in x:
             if "health" in subString.lower():
@@ -89,7 +89,7 @@ def parsePDF(fileLocation):
             tempName = ""
             for x in healthUnitsWithValues[:-2]:
                 tempName = tempName + x + " "
-            tempName = tempName[:-1]
+            tempName = re.sub('[^a-z A-Z]','',tempName[:-1])
             tempRegion = region.Region(tempName,0,currDay,currLastDay)
             regions[tempName] = tempRegion
         popFile = open("HealthUnitPopulations.txt",'r')
