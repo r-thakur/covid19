@@ -277,7 +277,7 @@ def pullCSV():
     #     pass
 
     caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0].replace(",","")
-    caseInformation["VaccinesCompleted"] = lastVaccineRow["total_vaccinations_completed"].values[0].replace(",","")
+    caseInformation["VaccinesCompleted"] = lastVaccineRow["total_individuals_fully_vaccinated"].values[0].replace(",","")
     #print(caseInformation["VaccinesAdministered"])
     caseInformation["PrevVaccinesAdministered"] = prevVaccineRow["total_doses_administered"].values[0]
 
