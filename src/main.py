@@ -84,8 +84,8 @@ def parsePDF(fileLocation):
 
             healthUnitsWithValues = list(filter(None, healthUnitsWithValues)) 
 
-            currLastDay = re.sub('[^0-9]','', healthUnitsWithValues[-2]) 
-            currDay = re.sub('[^0-9]','', healthUnitsWithValues[-1])  
+            currLastDay = re.sub('[^0-9/-]','', healthUnitsWithValues[-2]) 
+            currDay = re.sub('[^0-9/-]','', healthUnitsWithValues[-1])  
             tempName = ""
             for x in healthUnitsWithValues[:-2]:
                 tempName = tempName + x + " "
