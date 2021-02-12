@@ -263,18 +263,19 @@ def pullCSV():
     lastVaccineRow = vaccineDF.tail(1)
     prevVaccineRow = vaccineDF.tail(2).head(1)
     caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
-    vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
-    # try:
-    #     caseInformation["VaccineDate"] = datetime.strptime(caseInformation["VaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
-    #     vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
-    # except:
-    #     pass
+    # vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
+    try:
+        caseInformation["VaccineDate"] = datetime.strptime(caseInformation["VaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
+        vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
+    except:
+        caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
+        vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
 
     caseInformation["PrevVaccineDate"] = prevVaccineRow["report_date"].values[0]
-    # try:
-    #     caseInformation["PrevVaccineDate"] = datetime.strptime(caseInformation["PrevVaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
-    # except:
-    #     pass
+    try:
+        caseInformation["PrevVaccineDate"] = datetime.strptime(caseInformation["PrevVaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
+    except:
+        caseInformation["PrevVaccineDate"] = prevVaccineRow["report_date"].values[0]
 
     caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0].replace(",","")
     caseInformation["VaccinesCompleted"] = lastVaccineRow["total_individuals_fully_vaccinated"].values[0].replace(",","")
