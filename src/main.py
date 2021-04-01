@@ -318,8 +318,8 @@ def pullCSV():
 
     caseInformation["TotalActiveCases"] = int(lastRow['Confirmed Positive'].values[0])
 
-    if (not lastRow['Number of patients in ICU with COVID-19'].isnull().values.any()):
-        caseInformation["TotalICUCases"] = int(lastRow['Number of patients in ICU with COVID-19'].values[0])
+    if (not lastRow['Number of patients in ICU, testing positive for COVID-19'].isnull().values.any()):
+        caseInformation["TotalICUCases"] = int(lastRow['Number of patients in ICU, testing positive for COVID-19'].values[0])
     else:
         caseInformation["TotalICUCases"] = "Value not available"
 
