@@ -152,7 +152,9 @@ def covidInfoWithHTML(per100):
                                                                                         DeltaVaccinesAdministered = caseInformation["DeltaVaccinesAdministered"],\
                                                                                             LastUpdatedDate = caseInformation["LastUpdatedDate"],\
                                                                                                 PDFUpdatedDate = caseInformation["PDFUpdatedDate"],\
-                                                                                                    VaccinesCompleted = caseInformation["VaccinesCompleted"])
+                                                                                                    VaccinesCompleted = caseInformation["VaccinesCompleted"],
+                                                                                                    PeopleWithAtLeastOneDose = caseInformation["PeopleWithAtLeastOneDose"],
+                                                                                                    OneDoseVaccinePercentage = caseInformation["OneDoseVaccinePercentage"])
 
 
 @app.route('/refresh')
@@ -279,14 +281,18 @@ def pullCSV():
 
     caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0].replace(",","")
     caseInformation["VaccinesCompleted"] = lastVaccineRow["total_individuals_fully_vaccinated"].values[0].replace(",","")
+
+
+    caseInformation["PeopleWithAtLeastOneDose"] = int(caseInformation["VaccinesAdministered"]) - int(caseInformation["VaccinesCompleted"])
     #print(caseInformation["VaccinesAdministered"])
     caseInformation["PrevVaccinesAdministered"] = prevVaccineRow["total_doses_administered"].values[0]
 
     caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"]) - int(caseInformation["PrevVaccinesAdministered"].replace(",","")))
 
     if caseInformation["VaccinesCompleted"] != "Not Available":
-        vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesCompleted"]))/(14.75*10000),2))+"%"
+        vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesCompleted"]))/(12*10000),2))+"%"
         caseInformation["VaccinePercentage"] = vaccinePerPopulationPercentage
+        caseInformation["OneDoseVaccinePercentage"] = str(round((float(caseInformation["PeopleWithAtLeastOneDose"]))/(14.75*10000),2))+"%"
 
 
     df = pandas.read_csv(csvFile)
