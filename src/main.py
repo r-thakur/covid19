@@ -279,15 +279,15 @@ def pullCSV():
     except:
         caseInformation["PrevVaccineDate"] = prevVaccineRow["report_date"].values[0]
 
-    caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0].replace(",","")
-    caseInformation["VaccinesCompleted"] = lastVaccineRow["total_individuals_fully_vaccinated"].values[0].replace(",","")
+    caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0]
+    caseInformation["VaccinesCompleted"] = lastVaccineRow["total_individuals_fully_vaccinated"].values[0]
 
 
     caseInformation["PeopleWithAtLeastOneDose"] = int(caseInformation["VaccinesAdministered"]) - int(caseInformation["VaccinesCompleted"])
     #print(caseInformation["VaccinesAdministered"])
     caseInformation["PrevVaccinesAdministered"] = prevVaccineRow["total_doses_administered"].values[0]
 
-    caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"]) - int(caseInformation["PrevVaccinesAdministered"].replace(",","")))
+    caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"]) - int(caseInformation["PrevVaccinesAdministered"]))
 
     if caseInformation["VaccinesCompleted"] != "Not Available":
         vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesCompleted"]))/(12*10000),2))+"%"
