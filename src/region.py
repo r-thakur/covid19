@@ -6,6 +6,7 @@ class Region:
         self.casesToday = casesToday
         self.casesYesterday = casesYesterday
         self.partOfGTA = False
+        self.per100 = 0
         if (name in self.GTA):
             self.partOfGTA = True
     def printAll(self):
