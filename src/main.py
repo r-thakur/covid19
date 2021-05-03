@@ -280,7 +280,7 @@ def pullCSV():
         caseInformation["PrevVaccineDate"] = prevVaccineRow["report_date"].values[0]
 
     caseInformation["VaccinesAdministered"] = lastVaccineRow["total_doses_administered"].values[0]
-    caseInformation["VaccinesCompleted"] = lastVaccineRow["total_individuals_fully_vaccinated"].values[0]
+    caseInformation["VaccinesCompleted"] = str(int(lastVaccineRow["total_individuals_fully_vaccinated"].values[0]))
 
 
     caseInformation["PeopleWithAtLeastOneDose"] = int(caseInformation["VaccinesAdministered"]) - int(caseInformation["VaccinesCompleted"])
