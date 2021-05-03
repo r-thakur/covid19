@@ -363,7 +363,7 @@ def pullCSV():
     else:
         caseInformation["PercentPositive"] = "?"
 
-initData()
+#initData()
 
 if __name__ == "__main__":
     prevURL = ""
