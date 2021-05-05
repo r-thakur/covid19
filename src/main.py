@@ -176,7 +176,7 @@ def refreshData():
     print(pdfUpdateDate)
     print(vaccineUpdateDate)
     print(ontarioUpdateDate)
-    if (pdfUpdateDate > ontarioUpdateDate):
+    if (pdfUpdateDate > vaccineUpdateDate):
         pullCSV()
 
 def initData():
@@ -366,7 +366,7 @@ def pullCSV():
     else:
         caseInformation["PercentPositive"] = "?"
 
-#initData()
+initData()
 
 if __name__ == "__main__":
     prevURL = ""
