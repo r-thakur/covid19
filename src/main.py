@@ -173,7 +173,10 @@ def refreshData():
     if (url != prevURL):
         parsePDF(url)
         prevURL = url
-    if (pdfUpdateDate > vaccineUpdateDate or pdfUpdateDate > ontarioUpdateDate):
+    print(pdfUpdateDate)
+    print(vaccineUpdateDate)
+    print(ontarioUpdateDate)
+    if (pdfUpdateDate > ontarioUpdateDate):
         pullCSV()
 
 def initData():
