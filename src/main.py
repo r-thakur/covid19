@@ -309,6 +309,7 @@ def pullCSV():
     try:
         ontarioUpdateDate = datetime.strptime(caseInformation["LastUpdatedDate"], '%Y-%m-%d')
     except:
+        print("something went wrong with parsing date")
         pass
 
     caseInformation["DeltaActiveCases"] = int(lastRow['Confirmed Positive'].values[0] - secondLastRow['Confirmed Positive'].head(1).values[0])
