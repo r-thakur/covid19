@@ -250,12 +250,20 @@ def pullCSV():
 
     vaccineURL = "https://data.ontario.ca/dataset/752ce2b7-c15a-4965-a3dc-397bf405e7cc/resource/8a89caa9-511c-4568-af89-7f2174b4378c/download/vaccine_doses.csv"
 
-    hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-    'Accept-Encoding': 'none',
-    'Accept-Language': 'en-US,en;q=0.8',
-    'Connection': 'keep-alive'}
+    hdr = {'Connection': 'keep-alive',
+  'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="90", "Google Chrome";v="90"',
+  'sec-ch-ua-mobile': '?0',
+  'Upgrade-Insecure-Requests': '1',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+  'Sec-Fetch-Site': 'none',
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-User': '?1',
+  'Sec-Fetch-Dest': 'document',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'If-None-Match': '"1622124368.55-63037"',
+  'If-Modified-Since': 'Thu, 27 May 2021 14:06:08 GMT'
+}
     requestWHeader = Request(csvURL, headers=hdr)
     csvFile = urlopen(requestWHeader,context = ssl.SSLContext())
 
@@ -293,7 +301,7 @@ def pullCSV():
     caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"]) - int(caseInformation["PrevVaccinesAdministered"]))
 
     if caseInformation["VaccinesCompleted"] != "Not Available":
-        vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesCompleted"]))/(12*10000),2))+"%"
+        vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesCompleted"]))/(14.75*10000),2))+"%"
         caseInformation["VaccinePercentage"] = vaccinePerPopulationPercentage
         caseInformation["OneDoseVaccinePercentage"] = str(round((float(caseInformation["PeopleWithAtLeastOneDose"]))/(14.75*10000),2))+"%"
 
