@@ -108,7 +108,10 @@ def hello_world():
 
 @app.route('/covidHTML/<per100>')
 def covidInfoWithHTML(per100):
-    refreshData()
+    try:
+        refreshData()
+    except:
+        return "Error with Ontario data retrieval. Please try again later."
     per100 = int(per100)
     gtaData = ""
     for x in regions.keys():
@@ -181,13 +184,15 @@ def refreshData():
 
 def initData():
     global prevURL, lastUpdatedTime
-    url = pullPDF()
-    parsePDF(url)
-    pullCSV()
+    try: 
+        url = pullPDF()
+        parsePDF(url)
+        pullCSV()
+    except:
+        print("error with initialization")
     prevURL = url
     lastUpdatedTime=datetime.today()
     print("Initialization complete")
-
 
 # def initData():
 #     global prevURL, lastUpdatedTime, initNeeded
