@@ -306,7 +306,7 @@ def pullCSV():
     caseInformation["DeltaVaccinesAdministered"] = str(int(caseInformation["VaccinesAdministered"]) - int(caseInformation["PrevVaccinesAdministered"]))
 
     if caseInformation["VaccinesCompleted"] != "Not Available":
-        vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesCompleted"]))/(12*10000),2))+"%"
+        vaccinePerPopulationPercentage = str(round((float(caseInformation["VaccinesCompleted"]))/(14.75*10000),2))+"%"
         caseInformation["VaccinePercentage"] = vaccinePerPopulationPercentage
         caseInformation["OneDoseVaccinePercentage"] = str(round((float(caseInformation["PeopleWithAtLeastOneDose"]))/(14.75*10000),2))+"%"
         caseInformation["ThreeDoseVaccinePercentage"] = str(round((float(caseInformation["PeopleWithThreeDoses"]))/(14.75*10000),2))+"%"
