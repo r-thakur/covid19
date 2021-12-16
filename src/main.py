@@ -175,7 +175,7 @@ def refreshData():
     if (url != prevURL):
         parsePDF(url)
         prevURL = url
-    if (pdfUpdateDate > vaccineUpdateDate):
+    if (pdfUpdateDate > vaccineUpdateDate or pdfUpdateDate > ontarioUpdateDate):
         pullCSV()
 
 def initData():
@@ -231,6 +231,7 @@ def pullPDF():
     currURL = str(linkLookupStr[3]).split('\"')[1]
 
     caseInformation["PDFUpdatedDate"] = (re.findall("[0-9]+-[0-9]+-[0-9]+",currURL))[0]
+    print(pdfUpdateDate)
     pdfUpdateDate = datetime.strptime(caseInformation["PDFUpdatedDate"], '%Y-%m-%d')
     return currURL
 
