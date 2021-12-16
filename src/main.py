@@ -274,13 +274,15 @@ def pullCSV():
     lastVaccineRow = vaccineDF.tail(1)
     prevVaccineRow = vaccineDF.tail(2).head(1)
     caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
+    print("date from vaccination file:")
+    print(caseInformation["VaccineDate"])
     # vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
     try:
         caseInformation["VaccineDate"] = datetime.strptime(caseInformation["VaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
         vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
         print("tried the first option")
     except:
-        print("tried the first option")
+        print("tried the second option")
         caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
         vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
         
