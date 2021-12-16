@@ -175,8 +175,11 @@ def refreshData():
     if (url != prevURL):
         parsePDF(url)
         prevURL = url
+    print("pdfUpdateDate")
     print(pdfUpdateDate)
+    print("vaccineUpdateDate")
     print(vaccineUpdateDate)
+    print("ontarioUpdateDate")
     print(ontarioUpdateDate)
 
     if (pdfUpdateDate > vaccineUpdateDate or pdfUpdateDate > ontarioUpdateDate):
