@@ -7,6 +7,8 @@
 <!--===============================================================================================-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        Chart.defaults.color = "#ffffff";
+
         const labels = [
             {% for value in labels[:-1] %}
                             "{{value}}",
@@ -16,7 +18,7 @@
         const data = {
         labels: labels,
         datasets: [{
-            label: 'New Infections',
+            label: 'Active Cases',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
             data: [{{positive | join(', ')}}],
@@ -24,14 +26,14 @@
         },
         {
             label: 'Hospitalizations',
-            backgroundColor: 'rgb(70,130,180)',
+            backgroundColor: 'rgb(100, 149, 237)',
             borderColor: 'rgb(70,130,180)',
             data: [{{hospital | join(', ')}}],
             yAxisID: 'y1'
         },
         {
             label: 'In ICU',
-            backgroundColor: 'rgb(138,43,226)',
+            backgroundColor: 'rgb(100, 149, 237)',
             borderColor: 'rgb(138,43,226)',
             data: [{{icu | join(', ')}}],
             yAxisID: 'y1'
@@ -56,21 +58,26 @@
                 text: '90 Day COVID Timeline'
                 }
             },
-            scales: {
+            scales: {              
                 y: {
-                type: 'linear',
-                display: true,
-                position: 'left',
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    ticks: {
+                        color: 'rgb(255, 99, 132)'
+                    }
                 },
                 y1: {
-                type: 'linear',
-                display: true,
-                position: 'right',
-
-                // grid line settings
-                grid: {
-                    drawOnChartArea: false, // only want the grid lines for one axis to show up
-                },
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    ticks: {
+                        color: 'rgb(100, 149, 237)',
+                    },
+                    // grid line settings
+                    grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    },
                 },
             }
             }
