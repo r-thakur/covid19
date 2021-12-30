@@ -91,3 +91,21 @@ table th {
     border-bottom: 0;
   }
 }
+
+#chartContainer{
+  background-color: #000000d1;
+  border-radius: 6px;
+/*   Check out the fancy shadow  on this one */
+  /* box-shadow: 0 3rem 5rem -2rem rgba(0, 0, 0, 0.6); */
+  max-width: 1250px;
+  height: 500px;  
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin-left:auto;
+  margin-right: auto;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding: 0;
+  width: 100%;
+
+}

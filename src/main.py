@@ -20,6 +20,7 @@ import io
 app = Flask(__name__)
 regions = {}
 caseInformation = {}
+last90 = {}
 lastUpdatedTime = ""
 prevURL = ""
 
@@ -106,6 +107,7 @@ def hello_world():
     return ''
 
 
+
 @app.route('/covidHTML/<per100>')
 def covidInfoWithHTML(per100):
     refreshData()
@@ -156,7 +158,7 @@ def covidInfoWithHTML(per100):
                                                                                                     PeopleWithAtLeastOneDose = caseInformation["PeopleWithAtLeastOneDose"],
                                                                                                     OneDoseVaccinePercentage = caseInformation["OneDoseVaccinePercentage"],
                                                                                                     PeopleWithThreeDoses = caseInformation["PeopleWithThreeDoses"],
-                                                                                                    ThreeDoseVaccinePercentage = caseInformation["ThreeDoseVaccinePercentage"])
+                                                                                                    ThreeDoseVaccinePercentage = caseInformation["ThreeDoseVaccinePercentage"],labels=last90["dates"],positive=last90["current_positive"],hospital=last90["current_hospital"],icu=last90["current_icu"])
 
 
 @app.route('/refresh')
@@ -250,8 +252,14 @@ def checkIfEmptyAndConvertToInt(cell):
 
 
 
+@app.route('/graph')
+def graphData():
+    return flask.render_template('graph.html',labels=last90["dates"],positive=last90["current_positive"],hospital=last90["current_hospital"],icu=last90["current_icu"])
+
+
+
 def pullCSV():
-    global caseInformation, vaccineUpdateDate, ontarioUpdateDate
+    global caseInformation, vaccineUpdateDate, ontarioUpdateDate, last90
     csvURL = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
 
     vaccineURL = "https://data.ontario.ca/dataset/752ce2b7-c15a-4965-a3dc-397bf405e7cc/resource/8a89caa9-511c-4568-af89-7f2174b4378c/download/vaccine_doses.csv"
@@ -271,6 +279,22 @@ def pullCSV():
 
     vaccineDF = pandas.read_csv(vaccineData)
     vaccineDF.dropna(subset = ["report_date"], inplace=True)
+    
+    casesDF = pandas.read_csv(csvFile)
+    last90Rows = casesDF.tail(90)
+
+    
+    last90["dates"] =  last90Rows["Reported Date"].values.astype(str)
+    last90["current_positive"] = last90Rows["Confirmed Positive"].astype(int).values
+    last90["current_hospital"] = last90Rows["Number of patients hospitalized with COVID-19"].astype(int).values
+    last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].astype(int).values
+
+    #print(last90["dates"])
+    #print(last90["current_positive"])
+
+
+
+
     lastVaccineRow = vaccineDF.tail(1)
     prevVaccineRow = vaccineDF.tail(2).head(1)
     caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
@@ -280,9 +304,7 @@ def pullCSV():
     try:
         caseInformation["VaccineDate"] = datetime.strptime(caseInformation["VaccineDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
         vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
-        print("tried the first option")
     except:
-        print("tried the second option")
         caseInformation["VaccineDate"] = lastVaccineRow["report_date"].values[0]
         vaccineUpdateDate = datetime.strptime(caseInformation["VaccineDate"], '%Y-%m-%d')
         
@@ -312,10 +334,10 @@ def pullCSV():
         caseInformation["ThreeDoseVaccinePercentage"] = str(round((float(caseInformation["PeopleWithThreeDoses"]))/(14.75*10000),2))+"%"
 
 
-    df = pandas.read_csv(csvFile)
-    lastRow = df.tail(1)
-    secondLastRow = df.tail(2)
-    seventhLastRow = df.tail(7)
+
+    lastRow = casesDF.tail(1)
+    secondLastRow = casesDF.tail(2)
+    seventhLastRow = casesDF.tail(7)
 
     
     #caseInformation["LastUpdatedDate"] = datetime.strptime(lastRow['Reported Date'].values[0], "%m/%d/%Y").strftime("%Y-%m-%d")  
@@ -341,8 +363,8 @@ def pullCSV():
 
     caseInformation["TotalActiveCases"] = int(lastRow['Confirmed Positive'].values[0])
 
-    if (not lastRow['Number of patients in ICU, testing positive for COVID-19'].isnull().values.any()):
-        caseInformation["TotalICUCases"] = int(lastRow['Number of patients in ICU, testing positive for COVID-19'].values[0])
+    if (not lastRow['Number of patients in ICU due to COVID-19'].isnull().values.any()):
+        caseInformation["TotalICUCases"] = int(lastRow['Number of patients in ICU due to COVID-19'].values[0])
     else:
         caseInformation["TotalICUCases"] = "Value not available"
 
@@ -379,6 +401,8 @@ def pullCSV():
         caseInformation["PercentPositive"] = str(round((float(caseInformation["NewCasesToday"])/float(caseInformation["TotalTestsCompleted"])*100),2))
     else:
         caseInformation["PercentPositive"] = "?"
+    
+
 
 initData()
 

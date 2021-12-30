@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>COVID Stats - Ontario</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/mobile.css') }}">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = [
+            {% for value in labels[:-1] %}
+                            "{{value}}",
+                        {% endfor %}
+                        "{{labels[-1]}}"]
+                        
+        const data = {
+          labels: labels,
+          datasets: [{
+            label: 'New Infections',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [{{positive | join(', ')}}],
+            yAxisID: 'y'
+          },
+          {
+            label: 'Hospital',
+            backgroundColor: 'rgb(70,130,180)',
+            borderColor: 'rgb(70,130,180)',
+            data: [{{hospital | join(', ')}}],
+            yAxisID: 'y1'
+          },
+          {
+            label: 'ICU',
+            backgroundColor: 'rgb(138,43,226)',
+            borderColor: 'rgb(138,43,226)',
+            data: [{{icu | join(', ')}}],
+            yAxisID: 'y1'
+          }]
+        };
+      
+        const config = {
+          type: 'line',
+          data: data,
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              responsiveAnimationDuration: 0,
+              interaction: {
+                mode: 'index',
+                intersect: false,
+              },
+              stacked: false,
+              plugins: {
+                title: {
+                  display: true,
+                  text: '90 Day COVID Timeline'
+                }
+              },
+              scales: {
+                y: {
+                  type: 'linear',
+                  display: true,
+                  position: 'left',
+                },
+                y1: {
+                  type: 'linear',
+                  display: true,
+                  position: 'right',
+
+                  // grid line settings
+                  grid: {
+                    drawOnChartArea: false, // only want the grid lines for one axis to show up
+                  },
+                },
+              }
+            }
+        };
+      </script>
+  
+<!--===============================================================================================-->
+</head>
+
+<body>
+  <div style="text-align: center; color:white;"><p>Download the <a href="https://www.canada.ca/en/public-health/services/diseases/coronavirus-disease-covid-19/covid-alert.html">COVID Alert App!</a></p></div>
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
+    <div style="text-align: center; color:white;"><p>Made by: <a href="https://www.linkedin.com/in/rohit-thakur-76558579/">Rohit</a></p></div>
+</body>
+
+<script>
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+  </script>    
+
+</html>
