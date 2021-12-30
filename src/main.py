@@ -270,11 +270,15 @@ def pullCSV():
     'Accept-Encoding': 'none',
     'Accept-Language': 'en-US,en;q=0.8',
     'Connection': 'keep-alive'}
-    requestWHeader = Request(csvURL, headers=hdr)
-    csvFile = urlopen(requestWHeader,context = ssl.SSLContext())
 
-    vaccineWHeader = Request(vaccineURL, headers=hdr)
-    vaccineData = urlopen(vaccineWHeader,context = ssl.SSLContext())
+    try:
+        requestWHeader = Request(csvURL, headers=hdr)
+        csvFile = urlopen(requestWHeader,context = ssl.SSLContext())
+
+        vaccineWHeader = Request(vaccineURL, headers=hdr)
+        vaccineData = urlopen(vaccineWHeader,context = ssl.SSLContext())
+    except:
+        return
 
 
     vaccineDF = pandas.read_csv(vaccineData)
