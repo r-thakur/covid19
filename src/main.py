@@ -292,6 +292,8 @@ def pullCSV():
     last90["current_positive"] = last90Rows["Confirmed Positive"].astype(int).values
     last90["current_hospital"] = last90Rows["Number of patients hospitalized with COVID-19"].astype(int).values
     last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].astype(int).values
+    last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].astype(int).values
+
 
     #print(last90["dates"])
     #print(last90["current_positive"])
@@ -343,13 +345,23 @@ def pullCSV():
     secondLastRow = casesDF.tail(2)
     seventhLastRow = casesDF.tail(7)
 
-    
+    '''
     #caseInformation["LastUpdatedDate"] = datetime.strptime(lastRow['Reported Date'].values[0], "%m/%d/%Y").strftime("%Y-%m-%d")  
     caseInformation["LastUpdatedDate"] = lastRow['Reported Date'].values[0]
     try:
         ontarioUpdateDate = datetime.strptime(caseInformation["LastUpdatedDate"], '%Y-%m-%d')
     except:
         pass
+    '''
+    caseInformation["LastUpdatedDate"] = lastRow['Reported Date'].values[0]
+    try:
+        caseInformation["LastUpdatedDate"] = datetime.strptime(caseInformation["LastUpdatedDate"], "%m/%d/%Y").strftime("%Y-%m-%d") 
+        ontarioUpdateDate = datetime.strptime(caseInformation["LastUpdatedDate"], '%Y-%m-%d')
+    except:
+        caseInformation["LastUpdatedDate"] = lastRow['Reported Date'].values[0]
+        ontarioUpdateDate = datetime.strptime(caseInformation["LastUpdatedDate"], '%Y-%m-%d')
+        
+
 
     caseInformation["DeltaActiveCases"] = int(lastRow['Confirmed Positive'].values[0] - secondLastRow['Confirmed Positive'].head(1).values[0])
     if (caseInformation["DeltaActiveCases"] >= 0):
