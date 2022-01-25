@@ -183,9 +183,10 @@ def refreshData():
     print(vaccineUpdateDate)
     print("ontarioUpdateDate")
     print(ontarioUpdateDate)
-
-    if (pdfUpdateDate > vaccineUpdateDate or pdfUpdateDate > ontarioUpdateDate):
-        pullCSV()
+    
+    if (pdfUpdateDate and vaccineUpdateDate and ontarioUpdateDate):
+        if (pdfUpdateDate > vaccineUpdateDate or pdfUpdateDate > ontarioUpdateDate):
+            pullCSV()
 
 def initData():
     global prevURL, lastUpdatedTime
