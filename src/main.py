@@ -401,12 +401,15 @@ def pullCSV():
         caseInformation["DeltaWeekHospitalizations"] = str(caseInformation["DeltaWeekHospitalizations"])
 
 
-    caseInformation["Deaths"] = int(lastRow['Deaths'].values[0])
-    caseInformation["DeltaWeekDeaths"] = int(lastRow['Deaths'].values[0] - seventhLastRow['Deaths'].head(1).values[0])
-    if (caseInformation["DeltaWeekDeaths"] >= 0):
-        caseInformation["DeltaWeekDeaths"] = '+'+str(caseInformation["DeltaWeekDeaths"])
+    caseInformation["Deaths"] = int(lastRow['Deaths_New_Methodology'].values[0])
+    if (not seventhLastRow['Deaths_New_Methodology'].isnull().values.any()):
+        caseInformation["DeltaWeekDeaths"] = int(lastRow['Deaths_New_Methodology'].values[0] - seventhLastRow['Deaths_New_Methodology'].head(1).values[0])
+        if (caseInformation["DeltaWeekDeaths"] >= 0):
+            caseInformation["DeltaWeekDeaths"] = '+'+str(caseInformation["DeltaWeekDeaths"])
+        else:
+            caseInformation["DeltaWeekDeaths"] = str(caseInformation["DeltaWeekDeaths"])
     else:
-        caseInformation["DeltaWeekDeaths"] = str(caseInformation["DeltaWeekDeaths"])
+        caseInformation["DeltaWeekDeaths"] = 'N/A'
 
 
 
