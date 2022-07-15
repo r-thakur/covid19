@@ -284,15 +284,33 @@ def pullCSV():
     last90Rows = casesDF.tail(90)
 
     
-    last90["dates"] =  last90Rows["Reported Date"].values.astype(str)
+    last90["dates"] =  list(last90Rows["Reported Date"].values.astype(str))
     #last90["current_positive"] = last90Rows["Confirmed Positive"].fillna(0)
-    last90["current_positive"] = last90Rows["Confirmed Positive"].fillna(0).astype(int).values
+    last90["current_positive"] = list(last90Rows["Confirmed Positive"].fillna(-1).astype(int).values)
 
     #last90["current_hospital"] = last90Rows["Number of patients hospitalized with COVID-19"].fillna(0)
-    last90["current_hospital"] = last90Rows["Number of patients hospitalized with COVID-19"].fillna(0).astype(int).values
+    last90["current_hospital"] = list(last90Rows["Number of patients hospitalized with COVID-19"].fillna(-1).astype(int).values)
 
     #last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].fillna(0)
-    last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].fillna(0).astype(int).values
+    last90["current_icu"] = list(last90Rows["Number of patients in ICU due to COVID-19"].fillna(-1).astype(int).values)
+
+
+    for index, value in enumerate(last90["current_positive"]):
+        if value == -1:
+            last90["dates"].pop(index)
+            last90["current_positive"].pop(index)
+            last90["current_hospital"].pop(index)
+            last90["current_icu"].pop(index)
+    for index, value in enumerate(last90["current_hospital"]):
+        if value == -1:
+            last90["dates"].pop(index)
+            last90["current_hospital"].pop(index)
+            last90["current_icu"].pop(index)
+    for index, value in enumerate(last90["current_icu"]):
+        if value == -1:
+            last90["dates"].pop(index)     
+            last90["current_icu"].pop(index)
+
 
     #print(last90["dates"])
     #print(last90["current_positive"])
