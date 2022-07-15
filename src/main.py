@@ -31,76 +31,80 @@ pdfUpdateDate = ""
 # lock = Lock()
 # initNeeded = True
 
-def parsePDF(fileLocation):
-    global regions
-    regions.clear()
 
-    print(fileLocation)
+# def parsePDF(fileLocation):
+#     global regions
+#     regions.clear()
 
-    '''
-    hdr = {'sec-ch-ua': '"Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"',
-  'sec-ch-ua-mobile': '?0',
-  'Upgrade-Insecure-Requests': '1',
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
-  'accept': '*/*'}
-    requestWHeader = Request(fileLocation, headers=hdr)
-    pdfFile = urlopen(requestWHeader,context = ssl.SSLContext())
-    data = pdfFile.read()
-    bytesFile = io.BytesIO(data)
-    read_pdf = PyPDF2.PdfFileReader(bytesFile)
-    '''
+#     print(fileLocation)
 
-    payload={}
-    headers = {
-    'sec-ch-ua': '"Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"',
-    'sec-ch-ua-mobile': '?0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
-    }
+#     '''
+#     hdr = {'sec-ch-ua': '"Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"',
+#   'sec-ch-ua-mobile': '?0',
+#   'Upgrade-Insecure-Requests': '1',
+#   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+#   'accept': '*/*'}
+#     requestWHeader = Request(fileLocation, headers=hdr)
+#     pdfFile = urlopen(requestWHeader,context = ssl.SSLContext())
+#     data = pdfFile.read()
+#     bytesFile = io.BytesIO(data)
+#     read_pdf = PyPDF2.PdfFileReader(bytesFile)
+#     '''
 
-    response = requests.request("GET", fileLocation, headers=headers, data=payload)
-    data = response.content
-    bytesFile = io.BytesIO(data)
-    read_pdf = PyPDF2.PdfFileReader(bytesFile)
+#     payload={}
+#     headers = {
+#     'sec-ch-ua': '"Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"',
+#     'sec-ch-ua-mobile': '?0',
+#     'Upgrade-Insecure-Requests': '1',
+#     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+#     }
+
+#     response = requests.request("GET", fileLocation, headers=headers, data=payload)
+#     data = response.content
+#     bytesFile = io.BytesIO(data)
+#     read_pdf = PyPDF2.PdfFileReader(bytesFile)
 
 
-    pages = []
-    page = read_pdf.getPage(8)
-    pages.append(page)
-    page = read_pdf.getPage(9)
-    pages.append(page)
-    page = read_pdf.getPage(10)
-    pages.append(page)
+#     pages = []
+#     page = read_pdf.getPage(8)
+#     pages.append(page)
+#     page = read_pdf.getPage(9)
+#     pages.append(page)
+#     page = read_pdf.getPage(10)
+#     pages.append(page)
 
-    for page in pages:
-        page_content = page.extractText().replace("\n","")
-        # print(page_content)
-        x = re.findall("[A-Z][a-z&A-Z ,*/-]+ +[-0-9,*]+ +[-0-9,*]+", page_content)
-        healthUnits = []
-        for subString in x:
-            if "health" in subString.lower():
-                healthUnits.append(subString)
-        for subString in healthUnits:
-            healthUnitsWithValues = subString.split(" ")
+#     for page in pages:
+#         page_content = page.extractText().replace("\n","")
+#         # print(page_content)
+#         x = re.findall("[A-Z][a-z&A-Z ,*/-]+ +[-0-9,*]+ +[-0-9,*]+", page_content)
+#         healthUnits = []
+#         for subString in x:
+#             if "health" in subString.lower():
+#                 healthUnits.append(subString)
+#         for subString in healthUnits:
+#             healthUnitsWithValues = subString.split(" ")
 
-            healthUnitsWithValues = list(filter(None, healthUnitsWithValues)) 
+#             healthUnitsWithValues = list(filter(None, healthUnitsWithValues)) 
 
-            currLastDay = re.sub('[^0-9/-]','', healthUnitsWithValues[-2]) 
-            currDay = re.sub('[^0-9/-]','', healthUnitsWithValues[-1])  
-            tempName = ""
-            for x in healthUnitsWithValues[:-2]:
-                tempName = tempName + x + " "
-            tempName = re.sub('[^a-z A-Z]','',tempName[:-1])
-            tempRegion = region.Region(tempName,0,currDay,currLastDay)
-            regions[tempName] = tempRegion
-        popFile = open("HealthUnitPopulations.txt",'r')
-        for x in popFile:
-            currRegion = x.replace("\n","")
-            if currRegion in regions.keys():
-                population = int(next(popFile))
-                regions[currRegion].setPopulation(population)     
-                regions[currRegion].calculatePer100()
-    popFile.close()
+#             currLastDay = re.sub('[^0-9/-]','', healthUnitsWithValues[-2]) 
+#             currDay = re.sub('[^0-9/-]','', healthUnitsWithValues[-1])  
+#             tempName = ""
+#             for x in healthUnitsWithValues[:-2]:
+#                 tempName = tempName + x + " "
+#             tempName = re.sub('[^a-z A-Z]','',tempName[:-1])
+#             tempRegion = region.Region(tempName,0,currDay,currLastDay)
+#             regions[tempName] = tempRegion
+#         popFile = open("HealthUnitPopulations.txt",'r')
+#         for x in popFile:
+#             currRegion = x.replace("\n","")
+#             if currRegion in regions.keys():
+#                 population = int(next(popFile))
+#                 regions[currRegion].setPopulation(population)     
+#                 regions[currRegion].calculatePer100()
+#     popFile.close()
+
+
+
 
 @app.route('/')
 def hello_world():
@@ -113,6 +117,8 @@ def covidInfoWithHTML(per100):
     refreshData()
     per100 = int(per100)
     gtaData = ""
+
+    '''
     for x in regions.keys():
         if regions[x].isPartOfGTA():
             gtaData += '<tr>'
@@ -130,35 +136,34 @@ def covidInfoWithHTML(per100):
             outsideData += '<td data-label="Cases Today (Per 100k)">' + str(regions[x].getPer100k()) + "</td>"
             outsideData += '<td data-label="Cases Yesterday">' + str(regions[x].getCasesYesterdayString()) + "</td>"
             outsideData += "</tr>"
+    '''
+
     return flask.render_template('index.html',\
         NewCases=caseInformation["NewCasesToday"],\
             TotalTests=caseInformation["TotalTestsCompleted"],\
                 PercentPositive=caseInformation["PercentPositive"],\
-                    GTARows=gtaData, \
-                        OutsideRows = outsideData,\
-                            ActiveCases = caseInformation["TotalActiveCases"],\
-                                DeltaActiveCases = caseInformation["DeltaActiveCases"], \
-                                    DeltaHospitalizations = caseInformation["DeltaHospitalizations"], \
-                                        TotalHospitalizations = caseInformation["TotalHospitalizations"], \
-                                            LastUpdated = lastUpdatedTime.date(),\
-                                                Per100k = per100,\
-                                                    DeltaWeekActiveCases = caseInformation["DeltaWeekActiveCases"],\
-                                                        DeltaWeekHospitalizations = caseInformation["DeltaWeekHospitalizations"],\
-                                                            TotalICUCases = caseInformation["TotalICUCases"],\
-                                                                Deaths = caseInformation["Deaths"],\
-                                                                    DeltaWeekDeaths = caseInformation["DeltaWeekDeaths"],\
-                                                                        VaccineDate = caseInformation["VaccineDate"],\
-                                                                            VaccinesAdministered = caseInformation["VaccinesAdministered"],\
-                                                                                VaccinePercentage = caseInformation["VaccinePercentage"],\
-                                                                                    PrevVaccineDate= caseInformation["PrevVaccineDate"],\
-                                                                                        DeltaVaccinesAdministered = caseInformation["DeltaVaccinesAdministered"],\
-                                                                                            LastUpdatedDate = caseInformation["LastUpdatedDate"],\
-                                                                                                PDFUpdatedDate = caseInformation["PDFUpdatedDate"],\
-                                                                                                    VaccinesCompleted = caseInformation["VaccinesCompleted"],
-                                                                                                    PeopleWithAtLeastOneDose = caseInformation["PeopleWithAtLeastOneDose"],
-                                                                                                    OneDoseVaccinePercentage = caseInformation["OneDoseVaccinePercentage"],
-                                                                                                    PeopleWithThreeDoses = caseInformation["PeopleWithThreeDoses"],
-                                                                                                    ThreeDoseVaccinePercentage = caseInformation["ThreeDoseVaccinePercentage"],labels=last90["dates"],positive=last90["current_positive"],hospital=last90["current_hospital"],icu=last90["current_icu"])
+                    ActiveCases = caseInformation["TotalActiveCases"],\
+                        DeltaActiveCases = caseInformation["DeltaActiveCases"], \
+                            DeltaHospitalizations = caseInformation["DeltaHospitalizations"], \
+                                TotalHospitalizations = caseInformation["TotalHospitalizations"], \
+                                    LastUpdated = lastUpdatedTime.date(),\
+                                        Per100k = per100,\
+                                            DeltaWeekActiveCases = caseInformation["DeltaWeekActiveCases"],\
+                                                DeltaWeekHospitalizations = caseInformation["DeltaWeekHospitalizations"],\
+                                                    TotalICUCases = caseInformation["TotalICUCases"],\
+                                                        Deaths = caseInformation["Deaths"],\
+                                                            DeltaWeekDeaths = caseInformation["DeltaWeekDeaths"],\
+                                                                VaccineDate = caseInformation["VaccineDate"],\
+                                                                    VaccinesAdministered = caseInformation["VaccinesAdministered"],\
+                                                                        VaccinePercentage = caseInformation["VaccinePercentage"],\
+                                                                            PrevVaccineDate= caseInformation["PrevVaccineDate"],\
+                                                                                DeltaVaccinesAdministered = caseInformation["DeltaVaccinesAdministered"],\
+                                                                                    LastUpdatedDate = caseInformation["LastUpdatedDate"],\
+                                                                                        VaccinesCompleted = caseInformation["VaccinesCompleted"],
+                                                                                        PeopleWithAtLeastOneDose = caseInformation["PeopleWithAtLeastOneDose"],
+                                                                                        OneDoseVaccinePercentage = caseInformation["OneDoseVaccinePercentage"],
+                                                                                        PeopleWithThreeDoses = caseInformation["PeopleWithThreeDoses"],
+                                                                                        ThreeDoseVaccinePercentage = caseInformation["ThreeDoseVaccinePercentage"],labels=last90["dates"],positive=last90["current_positive"],hospital=last90["current_hospital"],icu=last90["current_icu"])
 
 
 @app.route('/refresh')
@@ -169,31 +174,19 @@ def refreshDataEndpoint():
     return "Refresh was successful"
 
 def refreshData():
-    global prevURL, lastUpdatedTime
+    #global prevURL
+    global lastUpdatedTime
     timeAt1030 = datetime.today().replace(hour = 15, minute = 31, second= 0, microsecond=0)
     timeRightNow = datetime.today()
-    #if (timeRightNow > timeAt1030 and timeAt1030 > lastUpdatedTime):
-    url = pullPDF()
-    if (url != prevURL):
-        parsePDF(url)
-        prevURL = url
-    print("pdfUpdateDate")
-    print(pdfUpdateDate)
-    print("vaccineUpdateDate")
-    print(vaccineUpdateDate)
-    print("ontarioUpdateDate")
-    print(ontarioUpdateDate)
-    
-    if (pdfUpdateDate and vaccineUpdateDate and ontarioUpdateDate):
-        if (pdfUpdateDate > vaccineUpdateDate or pdfUpdateDate > ontarioUpdateDate):
-            pullCSV()
+    pullCSV()
 
 def initData():
-    global prevURL, lastUpdatedTime
-    url = pullPDF()
-    parsePDF(url)
+    #global prevURL
+    global lastUpdatedTime
+    #url = pullPDF()
+    #parsePDF(url)
     pullCSV()
-    prevURL = url
+    #prevURL = url
     lastUpdatedTime=datetime.today()
     print("Initialization complete")
 
@@ -228,7 +221,7 @@ def initData():
 #         if regions[x].getPer100k() > per100 and not regions[x].isPartOfGTA():
 #             regions[x].printRelevant()
 
-
+'''
 def pullPDF():
     global caseInformation, pdfUpdateDate
     pdfFilePage = requests.get("https://covid-19.ontario.ca/covid-19-epidemiologic-summaries-public-health-ontario")
@@ -237,12 +230,14 @@ def pullPDF():
     linkLookupStr = (soup.find("div", {"id": "block-ds-theme-content"}).findAll("a"))
     #regexString = '(?<=\<a href=").+?(pdf)'
     #x = re.findall(regexString, linkLookupStr)[0]
-
+    print("look here")
+    print(linkLookupStr)
     currURL = str(linkLookupStr[3]).split('\"')[1]
 
     caseInformation["PDFUpdatedDate"] = (re.findall("[0-9]+-[0-9]+-[0-9]+",currURL))[0]
     pdfUpdateDate = datetime.strptime(caseInformation["PDFUpdatedDate"], '%Y-%m-%d')
     return currURL
+'''
 
 
 def checkIfEmptyAndConvertToInt(cell):
@@ -290,11 +285,14 @@ def pullCSV():
 
     
     last90["dates"] =  last90Rows["Reported Date"].values.astype(str)
-    last90["current_positive"] = last90Rows["Confirmed Positive"].astype(int).values
-    last90["current_hospital"] = last90Rows["Number of patients hospitalized with COVID-19"].astype(int).values
-    last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].astype(int).values
-    last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].astype(int).values
+    #last90["current_positive"] = last90Rows["Confirmed Positive"].fillna(0)
+    last90["current_positive"] = last90Rows["Confirmed Positive"].fillna(0).astype(int).values
 
+    #last90["current_hospital"] = last90Rows["Number of patients hospitalized with COVID-19"].fillna(0)
+    last90["current_hospital"] = last90Rows["Number of patients hospitalized with COVID-19"].fillna(0).astype(int).values
+
+    #last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].fillna(0)
+    last90["current_icu"] = last90Rows["Number of patients in ICU due to COVID-19"].fillna(0).astype(int).values
 
     #print(last90["dates"])
     #print(last90["current_positive"])
@@ -394,11 +392,15 @@ def pullCSV():
     else:
         caseInformation["DeltaHospitalizations"] = str(caseInformation["DeltaHospitalizations"])
 
-    caseInformation["DeltaWeekHospitalizations"] = int(lastRow['Number of patients hospitalized with COVID-19'].values[0] - seventhLastRow['Number of patients hospitalized with COVID-19'].head(1).values[0])
-    if (caseInformation["DeltaWeekHospitalizations"] >= 0):
-        caseInformation["DeltaWeekHospitalizations"] = '+'+str(caseInformation["DeltaWeekHospitalizations"])
+
+    if (not seventhLastRow['Number of patients hospitalized with COVID-19'].isnull().values.any()):
+        caseInformation["DeltaWeekHospitalizations"] = int(lastRow['Number of patients hospitalized with COVID-19'].values[0] - seventhLastRow['Number of patients hospitalized with COVID-19'].head(1).values[0])
+        if (caseInformation["DeltaWeekHospitalizations"] >= 0):
+            caseInformation["DeltaWeekHospitalizations"] = '+'+str(caseInformation["DeltaWeekHospitalizations"])
+        else:
+            caseInformation["DeltaWeekHospitalizations"] = str(caseInformation["DeltaWeekHospitalizations"])
     else:
-        caseInformation["DeltaWeekHospitalizations"] = str(caseInformation["DeltaWeekHospitalizations"])
+        caseInformation["DeltaWeekHospitalizations"] = 'N/A'
 
 
     caseInformation["Deaths"] = int(lastRow['Deaths_New_Methodology'].values[0])
