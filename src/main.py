@@ -302,7 +302,7 @@ def pullCSV():
             last90["current_hospital"].pop(index)
             last90["current_icu"].pop(index)
     for index, value in enumerate(last90["current_hospital"]):
-        if value == -1:
+        if value == -1 or value == 0:
             last90["dates"].pop(index)
             last90["current_hospital"].pop(index)
             last90["current_icu"].pop(index)
